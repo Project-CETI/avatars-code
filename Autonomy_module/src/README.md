@@ -1,8 +1,8 @@
 # Setup the environment
-python -m venv .venv
-source .venv/bin/activate
-pip3 install -r requirements.txt
-export PYTHONPATH="$PYTHONPATH:$PWD"
+- Create environment: `python -m venv .venv`
+- Source environment: `source .venv/bin/activate`
+- Add dependencies: `pip3 install -r requirements.txt`
+- Add path: `export PYTHONPATH="$PYTHONPATH:$PWD"`
 
 # To run the fielded experiments with the engineered whale 
 
@@ -23,7 +23,7 @@ export PYTHONPATH="$PYTHONPATH:$PWD"
 ## To run an instance of sperm whales experiment
 - Run script: `python3 src/run_script.py src/configs/config_Dominica_Feb24.json MA_rollout 1`
 - The output will be saved in folder rebuttal2_output_Feb24
-- Visualize run: `src/visualization.py <filename>` filename is the path to state.csv rebuttal2_output_Feb24
+- Visualize run: `src/visualization.py <filename>` filename is the path to state.csv inside rebuttal2_output_Feb24
 
 ## To run aggregate results for sperm whales experiment
 - Generate config files for running: `python3 src/rebuttal_runs/create_config_files_Feb24.py` 
@@ -36,7 +36,7 @@ export PYTHONPATH="$PYTHONPATH:$PWD"
 ## To run an instance of ablation study with the DSWP dataset 
 - Run script: `python3 src/run_script.py src/configs/config_Benchmark.json MA_rollout 1`
 - The output will be saved in folder rebuttal2_output_benchmark
-- Visualize run: `src/visualization.py <filename>` filename is the path to state.csv rebuttal2_output_benchmark
+- Visualize run: `src/visualization.py <filename>` filename is the path to state.csv inside rebuttal2_output_benchmark
 
 ## To run aggregate results for ablation study with the DSWP dataset 
 - Generate config files for running: `python3 src/rebuttal_runs/create_config_files_dswp.py`
