@@ -183,7 +183,7 @@ if __name__ == '__main__':#evalmetric':
         nagent_nwhales_combo = [[2,4], [2,5], [3,5]]
         # num_whales = [4, 5, 6]
         tagging_radii = [200, 300, 500]
-        metric_output = 'rebuttal2_output_Nov23/' #'rebuttal_output_Feb24_w_speed_based_rendezvous/' 
+        metric_output = 'output_Engineered_whale/' 
         output_base = metric_output + 'Combined_Dominica_Data'#'Nov23_Dominica_Data'
         all_possible_dates = ["2023-11-21_trace0", "2023-11-21_trace1", "2023-11-22_trace2", "2023-11-22_trace3", "2023-11-23_trace5", "2023-11-23_trace4"]
         combinations_of_dates = {num_whale: [all_possible_dates[:num_whale]] for num_whale in num_whales}
@@ -195,8 +195,7 @@ if __name__ == '__main__':#evalmetric':
         tagging_radii = [500, 1000, 1500] #[1500, 1000, 500 ]
         all_possible_dates = ["2024-02-29", "2024-03-01", "2024-03-02", "2024-03-04"]
         combinations_of_dates = {num_whale: list(combinations(all_possible_dates, num_whale)) for num_whale in num_whales}
-        # metric_output = 'rebuttal_output_Feb24_w_rendezvous_radius/' #'rebuttal_output_Feb24_w_speed_based_rendezvous/' 
-        metric_output = 'rebuttal2_output_Feb24/'
+        metric_output = 'output_sperm_whale/'
         output_base = metric_output + 'Feb24_Dominica_Data'
         observation_types = ['Acoustic_AOA_no_VHF']
     else:
@@ -205,7 +204,7 @@ if __name__ == '__main__':#evalmetric':
         nagent_nwhales_combo = [[2,4]]
         tagging_radii = [200, 300, 500]
         combinations_of_dates = {num_whale: [num_whale] for num_whale in num_whales}
-        metric_output = 'rebuttal2_output_benchmark/'
+        metric_output = 'output_ablation_dswp/'
         output_base = metric_output + 'Benchmark_Shane_Data'
         observation_types = ['Acoustic_xy_no_VHF', 'Acoustic_xy_VHF_xy', 'Acoustic_AOA_no_VHF','Acoustic_AOA_VHF_AOA'] #,'Acoustic_xy_no_VHF', 'Acoustic_xy_VHF_xy']
 

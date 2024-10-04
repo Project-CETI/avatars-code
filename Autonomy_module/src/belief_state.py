@@ -117,9 +117,7 @@ class Belief_State:
         self.w_theta = np.array([float(ai) for ai in state_str_elems[9].split(',')])
         self.w_v = np.array([float(ai) for ai in state_str_elems[10].split(',')])
         self.whale_up2 = np.array([True if ai == 'True' else False for ai in state_str_elems[11].split(',')])
-        # self.w_nextup_phase = np.array([float(ai) for ai in state_str_elems[11].split(',')])
-        # self.whale_up_deprecated = np.array([ai=='True' for ai in state_str_elems[12].split(',')])
-        # print(self.time, self.whale_up_deprecated)
+        
         if state_str_elems[12] != '\n' and state_str_elems[12] != '':
             self.assigned_whales = [int(ai) for ai in state_str_elems[12].rstrip('\n').split(',')]
         else:
@@ -132,18 +130,6 @@ class Belief_State:
             self.w_last_surface_end_time = [int(ai) if ai != 'None' and ai != 'nan' else None for ai in state_str_elems[14].rstrip('\n').split(',')]
 
 
-        # if len(state_str_elems)> 14 and state_str_elems[14] != '\n' and state_str_elems[14] != '':
-        #     self.w_Pcov = {wid: np.zeros(2,2) for wid in range(self.number_of_whales)}
-        #     P_cov_str = state_str_elems[14].rstrip('\n').split(',')
-        #     for wid in range(self.number_of_whales):
-        #         P_cov_str_wid = P_cov_str[wid].split('|')
-        #         self.w_Pcov[wid] = np.diag([ float(P_cov_str_wid[0]), float(P_cov_str_wid[1]) ])
-
-        # self.whale_up2 = np.array([True if self.w_last_surface_start_time[wid] <= self.time \
-        #     and (self.w_last_surface_end_time[wid] is None or math.isnan(self.w_last_surface_end_time[wid]) or \
-        #         self.w_last_surface_end_time[wid] < self.w_last_surface_start_time[wid]) \
-        #             else False for wid in range(self.number_of_whales)])
-        x = 1
 
     def next_state(self, control: Boat_Control, observations_x_y_v_theta_up = None, ground_truth_for_evaluation = None, Pcov = None, b_xys = None, w_assigned = None):#, surface_start_event_happened = None, surface_end_event_happened = None):
         time_delta = 1
@@ -260,10 +246,7 @@ class Belief_State:
         w_locs = {wid: [(self.w_x[wid], self.w_y[wid])] for wid in range(self.number_of_whales)}
         for wid in range(self.number_of_whales):
             for t in range(1, int(time_delta) + 1):
-                # if self.knowledge.use_GPS_coordinate_from_dataset:
-                #     wx, wy = self.knowledge.get_gps_from_start_vel_bearing(w_locs[wid][-1][0], w_locs[wid][-1][1], \
-                #         self.w_v[wid], self.w_theta[wid])
-                # else:
+                
                 wx = w_locs[wid][-1][0] + self.w_v[wid] * np.cos(self.w_theta[wid])
                 wy = w_locs[wid][-1][1] + self.w_v[wid] * np.sin(self.w_theta[wid])
         
@@ -309,13 +292,6 @@ class Belief_State:
                 target_loc = (w_locs[wid][-1][0], w_locs[wid][-1][1])
                 source_loc = (b_locs[bid][-1][0], b_locs[bid][-1][1])
 
-                # if self.knowledge.use_GPS_coordinate_from_dataset:
-                #     bv = min(self.knowledge.boat_max_speed_mtpm, \
-                #         self.knowledge.get_distance_from_latLon_to_meter(source_loc[1], source_loc[0], target_loc[1], target_loc[0]))
-                #     btheta = self.knowledge.get_bearing_from_p1_p2(source_loc[0], source_loc[1], target_loc[0], target_loc[1])
-                #     bx, by = self.knowledge.get_gps_from_start_vel_bearing(source_loc[0], source_loc[1], bv, btheta)
-                    
-                # else:
                 btheta = np.arctan2(target_loc[1] - source_loc[1], target_loc[0] - source_loc[0])
                 bv = min(self.knowledge.boat_max_speed_mtpm, np.sqrt((target_loc[1] - source_loc[1])**2 + (target_loc[0] - source_loc[0])**2))
                 bx = source_loc[0] + bv * np.cos(btheta)
@@ -331,7 +307,6 @@ class Belief_State:
         self.b_x = np.array([b_locs[bid][-1][0] for bid in range(self.number_of_boats)])
         self.b_y = np.array([b_locs[bid][-1][1] for bid in range(self.number_of_boats)])
 
-        # We have not added the assigned_whales.append() here, since it will be taken care at its caller function
         return total_movement_of_boats
     
     def next_state_future_fast_unused(self, time_delta, current_assignment, CE = 1):

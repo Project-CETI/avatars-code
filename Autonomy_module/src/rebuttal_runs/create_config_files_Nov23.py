@@ -13,7 +13,7 @@ def save_run_id_details(config_obj, number_of_whales, max_num_agents, date_combi
     data_max_y = -90
     data_max_x = -180
 
-    parsed_whale_data_output = 'data_from_experiment_Nov23/'
+    parsed_whale_data_output = 'Engg_whale_postprocessed_trace/'
     whalefiles = [f for f in listdir(parsed_whale_data_output) \
         if isfile(join(parsed_whale_data_output, f)) and 'ground_truth.csv' in f and any([dt in f for dt in date_combi])]
     print('files:', date_combi,whalefiles)
@@ -91,12 +91,13 @@ if __name__ == '__main__':
     if not os.path.exists(base_dir + 'rebuttal_runs/'):
         os.makedirs(base_dir + 'rebuttal_runs/')
 
-    rebuttal_output_path = 'rebuttal2_output_Nov23/'
+    rebuttal_output_path = 'output_Engineered_whale/'
     if not os.path.exists(rebuttal_output_path):
         os.makedirs(rebuttal_output_path)
 
     config_obj["base_output_path_prefix"] = rebuttal_output_path
-    batch_run_script = open(base_dir + 'rebuttal_runs/batch_run_script_Nov23.sh', 'w')
+    
+    batch_run_script = open(base_dir + 'rebuttal_runs/Nov23_batch_run_script.sh', 'w')
 
     combinations_of_dates = {num_whale: config_obj["dates"][:num_whale] for num_whale in num_whales}
 

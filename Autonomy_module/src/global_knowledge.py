@@ -70,14 +70,14 @@ class Global_knowledge:
             
             if self.experiment_type in ['Feb24_Dominica_Data', 'Combined_Dominica_Data']:
                 self.base_output_path = self.base_output_path_prefix + self.experiment_type \
-                + '_r' + str(self.tagging_distance) + '_w' + '_'.join(self.dates) + '_a' + str(self.number_of_agents) + '/' 
+                + '_r' + str(self.tagging_distance) + '_w' + '_'.join(self.dates[:self.number_of_whales]) + '_a' + str(self.number_of_agents) + '/' 
             else:
                 self.base_output_path = self.base_output_path_prefix + self.experiment_type + '_' + self.observation_type \
                 + '_r' + str(self.tagging_distance) + '_w' + str(self.number_of_whales) + '_a' + str(self.number_of_agents) + '/' 
 
             if self.experiment_type == 'Combined_Dominica_Data':
                 self.observations_per_minute = 60
-                self.parsed_whale_data_output = 'Engg_whale_postprocessed_trace_Sept21/' #'data_from_experiment_Nov23/'
+                self.parsed_whale_data_output = 'Engg_whale_postprocessed_trace/' #'data_from_experiment_Nov23/'
             elif self.experiment_type == 'Feb24_Dominica_Data':
                 self.observations_per_minute = 60
                 self.parsed_whale_data_output = 'Feb24_Dominica_Data/'

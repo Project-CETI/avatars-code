@@ -61,8 +61,8 @@ class EvalObjectClass:
                 #     print(e)
             else:
                 loc_error = np.linalg.norm([ self.gt_x[wid][-1] - self.loc_x[wid][-1], self.gt_y[wid][-1] - self.loc_y[wid][-1] ])
-            if loc_error > 2000:
-                print('here: localization error more than 2000 for whale ',wid)
+            # if loc_error > 2000:
+            #     print('here: localization error more than 2000 for whale ',wid)
             self.localization_error[wid].append(loc_error)
         self.l += 1
         if plot == False:

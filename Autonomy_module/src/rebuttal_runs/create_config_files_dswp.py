@@ -89,7 +89,7 @@ if __name__ == '__main__':
         os.makedirs(base_dir + 'rebuttal_runs/')
 
     
-    rebuttal_output_path = 'rebuttal2_output_benchmark/'
+    rebuttal_output_path = 'output_ablation_dswp/'
     print(rebuttal_output_path)
     # exit()
     

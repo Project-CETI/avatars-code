@@ -18,7 +18,7 @@
     "initial_obs_xy_error":[[0.0000001, 0],[0, 0.0000001]],
 
     
-    "base_output_path_prefix": "rebuttal2_output_Feb24/",
+    "base_output_path_prefix": "output_sperm_whale/",
 
     "n_horizon_for_state_estimation": 180,
     "n_horizon_for_evaluation": 120,

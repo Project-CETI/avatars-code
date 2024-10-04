@@ -15,67 +15,8 @@ from os.path import isfile, join
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_ground_truth(parameter: Global_knowledge, run_id) -> System_state:
-    gt_prefix, gt_path = parameter.get_system_gt_txyz_fnPrefix_path(run_id)
-    gt_filenames = [f for f in listdir(gt_path) if isfile(join(gt_path, f)) and gt_prefix.split('/')[-1] in f] if os.path.exists(gt_path) \
-        else []
-    #if ground truth already exists do not recreate to make the comparison fair for num_w, num_b and exp_type (simu/exp_data)
-    if len(gt_filenames) == 0:
-        if not os.path.exists(gt_path):
-            os.makedirs(gt_path)
-        gt = System_state(parameters = parameter, run_id = run_id) 
-        # Set whale locs, surfacetimes in terms of planning time may include -ve if whales have previously surfaced where Filter should start
-        # if parameter.experiment_type == 'Benchmark_Shane_Data':
-        #     gt.use_dswp_data() # whale_locs, surfacings, bxy0
-        # elif parameter.experiment_type == 'Combined_Dominica_Data':
-        #     # gt.data_from_dominica_experiment_Nov23() 
-        #     print('ERROR')
-        #     exit()
-        f = open(gt_prefix + '-'.join(map(str, gt.file_names)), 'wb')
-        pickle.dump(gt, f)
-        f.close()
-    else:
-        f = open(gt_path + gt_filenames[0], 'rb')
-        gt = pickle.load(f)
-        f.close()
-    return gt
 
-def get_observation(gt: System_state) -> ObservationClass:
-    raw_obs_prefix, raw_obs_path = gt.parameters.get_rawObservation_filterInput_fnPrefix_path(gt.run_id)
-    ro_filenames = [f for f in listdir(raw_obs_path) if isfile(join(raw_obs_path, f)) and raw_obs_prefix.split('/')[-1] in f \
-        and '-'.join(map(str, gt.file_names)) in f] if os.path.exists(raw_obs_path) else []
-    if len(ro_filenames) == 0:
-        if not os.path.exists(raw_obs_path):
-            os.makedirs(raw_obs_path)
-        raw_obs = ObservationClass(gt = gt) 
-        # Initialize obs for t0
-        # combined exp change parameters (mean times) from the estimated surfacing behavior. changes "parameter" in combined_experiment
-        f = open(raw_obs_prefix + '-'.join(map(str, gt.file_names)), 'wb')
-        pickle.dump(raw_obs, f)
-        f.close()
-    else:
-        f = open(raw_obs_path + ro_filenames[0], 'rb')
-        raw_obs = pickle.load(f)
-        f.close()
-    return raw_obs
 
-def get_filter(raw_obs: ObservationClass) -> State_Estimation_Filter:
-    state_estm_prefix, state_estm_path = raw_obs.parameters.get_stateEstimation_filterOutput_txyz_fnPrefix_path(raw_obs.run_id)
-    se_filenames = [f for f in listdir(state_estm_path) if isfile(join(state_estm_path, f)) and state_estm_prefix.split('/')[-1] in f \
-        and '-'.join(map(str, raw_obs.file_names)) in f] if os.path.exists(state_estm_path) else []
-
-    if len(se_filenames) == 0:
-        if not os.path.exists(state_estm_path):
-            os.makedirs(state_estm_path)
-        filter_ = State_Estimation_Filter(observation = raw_obs) # This should just be the whale_locs_t0, whale_ups
-        f = open(state_estm_prefix + '-'.join(map(str, raw_obs.file_names)), 'wb')
-        pickle.dump(filter_, f)
-        f.close()
-    else:
-        f = open(state_estm_path + se_filenames[0], 'rb')
-        filter_ = pickle.load(f)
-        f.close()
-    return filter_
 
 def set_random_seed(parameter: Global_knowledge, run_id = 0, seed = None):
     gt_path = parameter.get_system_seed_txyz_fnPrefix_path(run_id)
@@ -100,12 +41,9 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
     try:
         set_random_seed(parameter, run_id, seed)
         gt = System_state(parameters = parameter, run_id = run_id) 
-        # gt : System_state = get_ground_truth(parameter, run_id)
         evalObject = EvalObjectClass(gt = gt)
-        # raw_obs: ObservationClass = get_observation(gt)
         raw_obs = ObservationClass(gt = gt)
-        # localization_filter: State_Estimation_Filter = get_filter(raw_obs)
-        localization_filter = State_Estimation_Filter(observation = raw_obs) # This should just be the whale_locs_t0, whale_ups
+        localization_filter = State_Estimation_Filter(observation = raw_obs) 
         belief_state = localization_filter.belief_state0
         
         if policy_name is None:
@@ -140,90 +78,78 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
         log_file.write(belief_state.state_string())
         log_file.flush()
 
-        if run_id == -1 or debug == True:
-            belief_state.plot_state(path = folder_)
+        # if run_id == -1 or debug == True:
+        #     belief_state.plot_state(path = folder_)
 
         for time_step in range(int(parameter.n_horizon_for_evaluation/parameter.observations_per_minute) - 1):
         
             
             
-            if 1==1:
-                for sec in range(parameter.observations_per_minute):
-                    # scaled_control = Boat_Control(b_theta = control.b_theta, b_v = control.b_v / parameter.observations_per_minute)
-                    scaled_control = policy.get_control(belief_state)
-                    gt.step(scaled_control)
+            for sec in range(parameter.observations_per_minute):
+                scaled_control = policy.get_control(belief_state)
+                gt.step(scaled_control)
                     
-                    b_xys = np.array([convert_longlat_to_xy_in_meters(gt.current_agent_xs[bid], gt.current_agent_ys[bid]) \
-                        for bid in range(parameter.number_of_agents)])
-                    c_b_x = np.array([b_xy[0] for b_xy in b_xys])
-                    c_b_y = np.array([b_xy[1] for b_xy in b_xys])
+                b_xys = np.array([convert_longlat_to_xy_in_meters(gt.current_agent_xs[bid], gt.current_agent_ys[bid]) \
+                    for bid in range(parameter.number_of_agents)])
+                c_b_x = np.array([b_xy[0] for b_xy in b_xys])
+                c_b_y = np.array([b_xy[1] for b_xy in b_xys])
 
 
                     
                     
-                    raw_obs.set_observation_t(gt, time_step * parameter.observations_per_minute + sec + 1)
-                    observations_x_y_v_theta_up, Pcov = localization_filter.get_next_estimation(observation = raw_obs)
+                raw_obs.set_observation_t(gt, time_step * parameter.observations_per_minute + sec + 1)
+                observations_x_y_v_theta_up, Pcov = localization_filter.get_next_estimation(observation = raw_obs)
 
                     
-                    if parameter.experiment_type in ['Benchmark_Shane_Data','Feb24_Dominica_Data', 'Combined_Dominica_Data']:
-                        g_w_xys = {wid : None for wid in range(parameter.number_of_whales)}
-                        for wid in range(parameter.number_of_whales):
-                            if raw_obs.gt_for_eval[wid][0] is None:
-                                raw_obs.gt_for_eval[wid, 0] = observations_x_y_v_theta_up[wid, 5]
-                                raw_obs.gt_for_eval[wid, 1] = observations_x_y_v_theta_up[wid, 6]
+                if parameter.experiment_type in ['Benchmark_Shane_Data','Feb24_Dominica_Data', 'Combined_Dominica_Data']:
+                    g_w_xys = {wid : None for wid in range(parameter.number_of_whales)}
+                    for wid in range(parameter.number_of_whales):
+                        if raw_obs.gt_for_eval[wid][0] is None:
+                            raw_obs.gt_for_eval[wid, 0] = observations_x_y_v_theta_up[wid, 5]
+                            raw_obs.gt_for_eval[wid, 1] = observations_x_y_v_theta_up[wid, 6]
                                 
 
-                                # for wid in range(parameter.number_of_whales):
-                                if gt.current_whale_xs[wid] is None:
-                                    g_w_xys[wid] = None
-                                    continue
-                                g_w_xys[wid] = (observations_x_y_v_theta_up[wid, 0], observations_x_y_v_theta_up[wid,1])
+                            # for wid in range(parameter.number_of_whales):
+                            if gt.current_whale_xs[wid] is None:
+                                g_w_xys[wid] = None
+                                continue
+                            g_w_xys[wid] = (observations_x_y_v_theta_up[wid, 0], observations_x_y_v_theta_up[wid,1])
 
-                                gt.current_whale_assigned[wid] = gt.current_whale_assigned[wid] or (gt.current_whale_up[wid] and \
-                                    any([get_distance_from_latLon_to_meter(gt.current_agent_ys[bid], gt.current_agent_xs[bid], \
-                                        raw_obs.gt_for_eval[wid, 1], raw_obs.gt_for_eval[wid, 0]) <= parameter.tagging_distance \
-                                            for bid in range(parameter.number_of_agents)]))
-                                raw_obs.current_whale_assigned[wid] = gt.current_whale_assigned[wid]
+                            gt.current_whale_assigned[wid] = gt.current_whale_assigned[wid] or (gt.current_whale_up[wid] and \
+                                any([get_distance_from_latLon_to_meter(gt.current_agent_ys[bid], gt.current_agent_xs[bid], \
+                                    raw_obs.gt_for_eval[wid, 1], raw_obs.gt_for_eval[wid, 0]) <= parameter.tagging_distance \
+                                        for bid in range(parameter.number_of_agents)]))
+                            raw_obs.current_whale_assigned[wid] = gt.current_whale_assigned[wid]
 
 
 
-                            else:
-                                g_w_xys[wid] = convert_longlat_to_xy_in_meters(raw_obs.gt_for_eval[wid][0], raw_obs.gt_for_eval[wid][1])
-                    else:
-                        g_w_xys = {wid : convert_longlat_to_xy_in_meters(raw_obs.gt_for_eval[wid][0], raw_obs.gt_for_eval[wid][1]) \
-                            for wid in range(parameter.number_of_whales)}
+                        else:
+                            g_w_xys[wid] = convert_longlat_to_xy_in_meters(raw_obs.gt_for_eval[wid][0], raw_obs.gt_for_eval[wid][1])
+                else:
+                    g_w_xys = {wid : convert_longlat_to_xy_in_meters(raw_obs.gt_for_eval[wid][0], raw_obs.gt_for_eval[wid][1]) \
+                        for wid in range(parameter.number_of_whales)}
 
-                    evalObject.update_logs(raw_obs, observations_x_y_v_theta_up, Pcov, plot = debug if sec == 0 else False, folder_ = folder_)
+                evalObject.update_logs(raw_obs, observations_x_y_v_theta_up, Pcov, plot = debug if sec == 0 else False, folder_ = folder_)
 
                     
-                    # prev_assigned = len(belief_state.assigned_whales)
-                    belief_state.next_state(scaled_control, \
-                        observations_x_y_v_theta_up = observations_x_y_v_theta_up, Pcov = Pcov, \
-                            ground_truth_for_evaluation = g_w_xys, \
-                                b_xys = [c_b_x, c_b_y], w_assigned = raw_obs.current_whale_assigned)
+                # prev_assigned = len(belief_state.assigned_whales)
+                belief_state.next_state(scaled_control, \
+                    observations_x_y_v_theta_up = observations_x_y_v_theta_up, Pcov = Pcov, \
+                        ground_truth_for_evaluation = g_w_xys, \
+                            b_xys = [c_b_x, c_b_y], w_assigned = raw_obs.current_whale_assigned)
                             
                     
-                    # if prev_assigned != len(belief_state.assigned_whales):
-                    #     print('h')
+    
                     
-                    # if sec == 0 and (run_id == -1 or debug == True):
-                    #     belief_state.plot_state(path = folder_)
-                    
-                    
-                    log_file.write(belief_state.state_string())
-                    log_file.flush()
-                    if raw_obs.terminal():
-                        # print('terminal', raw_obs.current_whale_assigned)
-                        break
-                if run_id == -1 or debug == True:
-                    belief_state.plot_state(path = folder_)
+                log_file.write(belief_state.state_string())
+                log_file.flush()
                 if raw_obs.terminal():
-                    # print('terminal', raw_obs.current_whale_assigned)
                     break
-                    # gt.visualize_whales(folder_ = folder_, time_start_end = [0, (time_step + 1) * parameter.observations_per_minute ])
-            # if raw_obs.current_time >=59:
-            #     print('')
-
+            # if run_id == -1 or debug == True:
+            #     belief_state.plot_state(path = folder_)
+            if raw_obs.terminal():
+                break
+                
             
             
 
@@ -231,13 +157,13 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
 
         loc_error_filename = folder_ + 'loc_error.csv'
 
-        for wid in range(parameter.number_of_whales):
-            plt.scatter(np.arange(len(evalObject.localization_error[wid])), evalObject.localization_error[wid])
-            mean_err = round(np.mean(evalObject.localization_error[wid]),2)
-            std_err = round(np.std(evalObject.localization_error[wid]),2)
-            plt.title('Localization error mean:' + str(mean_err) + ' std:' +str(std_err))
-            plt.savefig(folder_ + 'loc_error'+str(wid)+'.png')
-            plt.close()
+        # for wid in range(parameter.number_of_whales):
+        #     plt.scatter(np.arange(len(evalObject.localization_error[wid])), evalObject.localization_error[wid])
+        #     mean_err = round(np.mean(evalObject.localization_error[wid]),2)
+        #     std_err = round(np.std(evalObject.localization_error[wid]),2)
+        #     plt.title('Localization error mean:' + str(mean_err) + ' std:' +str(std_err))
+        #     plt.savefig(folder_ + 'loc_error'+str(wid)+'.png')
+        #     plt.close()
         with open(loc_error_filename, "w") as loc_error_file:
             allw_loc_error = sum([evalObject.localization_error[wid] for wid in range(parameter.number_of_whales)], [])
             loc_error_file.write(str(np.mean(allw_loc_error)) +','+ str(np.std(allw_loc_error))+','+ str(len(allw_loc_error))+'\n')
@@ -268,7 +194,7 @@ if __name__ == '__main__':
     knowledge = Global_knowledge()
     knowledge.set_attr(json.load(f))
 
-    if len(sys.argv) == 4:
+    if len(sys.argv) < 4:
         num_processes = knowledge.average_num_runs
         pool = multiprocessing.Pool(num_processes)
         # parameter, run_id, debug, dont_run_policy, seed, rollout_time_dist
@@ -282,7 +208,7 @@ if __name__ == '__main__':
         # for i in range(100):
         # seed_for_run_id = (os.getpid() * int(time.time())) % 123456789
         seed_for_run_id = None
-        run_thread(parameter = knowledge, run_id = 0, debug = False, dont_run_policy = False, seed = seed_for_run_id, \
+        run_thread(parameter = knowledge, run_id = -1, debug = False, dont_run_policy = False, seed = seed_for_run_id, \
             rollout_time_dist = False)
 
 

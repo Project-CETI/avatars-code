@@ -95,13 +95,9 @@ if __name__ == '__main__':
         os.makedirs(base_dir + 'rebuttal_runs/')
 
     
-    rebuttal_output_path = 'rebuttal2_output_Feb24'
+    rebuttal_output_path = 'output_sperm_whale/'
     print(rebuttal_output_path)
-    # exit()
-    # if config_obj["speed_based_rendezvous"]:
-    #     rebuttal_output_path = 'rebuttal_output_Feb24_w_speed_based_rendezvous/'
-    # else:
-    #     rebuttal_output_path = 'rebuttal_output_Feb24_w_rendezvous_radius/'
+    
     if not os.path.exists(rebuttal_output_path):
         os.makedirs(rebuttal_output_path)
 
