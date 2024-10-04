@@ -1,0 +1,41 @@
+{
+    "experiment_type": "Benchmark_Shane_Data",
+    "observation_type": "Acoustic_AOA_VHF_AOA",
+
+    "number_of_whales": 4,
+    "number_of_agents": 2,
+
+    "tagging_distance": 500,
+    "visual_distance": 1500,
+    "boat_max_speed_mtpm": 900,
+
+    "Acoustic_AOA_obs_error_std_degree": 3,
+    "Vhf_AOA_obs_error_std_degree": 2,
+
+    "Acoustic_XY_obs_error_cov_m2": [40000, 40000],
+    "Vhf_XY_obs_error_cov_m2": [100, 100],
+
+    "initial_obs_xy_error":[[0.0000001, 0],[0, 0.0000001]],
+    
+    "base_output_path_prefix": "rebuttal2_output_benchmark/",
+
+    "n_horizon_for_state_estimation": 180,
+    "n_horizon_for_evaluation": 120,
+
+    "agents_own_vhf": true,
+    "Acoustic_sensor_speed_mtpm":160,
+    "Vhf_speed_mtpm": 0,
+    "max_listening_radius": 10000,
+
+    "surface_time_mean": 9,
+    "surface_time_var": 3,
+    "down_time_mean": 34,
+    "down_time_var": 19,
+
+    "discount_factor": 1,
+    "average_num_runs": 50,
+
+    "overlay_GPS" : false,
+    "speed_based_rendezvous" : false
+
+}

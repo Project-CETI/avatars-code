@@ -1,0 +1,10 @@
+observation_type,num_agents,num_whales,tagging_radius,successful_opportunity_mean,successful_opportunity_std,mission_time_mean,mission_time_std,missing_1_or_more_whales_prob,missed_0whales_prob,missed_1whales_prob,missed_2whales_prob,missed_3whales_prob,missed_4whales_prob,missed_5whales_prob
+Acoustic_AOA_VHF_AOA,2,4,200,79.73333333,11.69691317,23.89533333,2.627506296,0,1,0,0,0,0,
+Acoustic_AOA_VHF_AOA,2,4,300,77.54285714,11.15398712,23.64866667,3.399983399,0,1,0,0,0,0,
+Acoustic_AOA_VHF_AOA,2,4,500,80.4,10.70077879,22.95666667,2.58123786,0,1,0,0,0,0,
+Acoustic_AOA_VHF_AOA,2,5,200,42.80987901,6.779794785,91.78,2.022770377,1,0,0.96,0.04,0,0,0
+Acoustic_AOA_VHF_AOA,2,5,300,52.54473304,6.597271812,51.94933333,6.595965905,0,1,0,0,0,0,0
+Acoustic_AOA_VHF_AOA,2,5,500,71.94444444,10.72339413,33.961,6.280664871,0,1,0,0,0,0,0
+Acoustic_AOA_VHF_AOA,3,5,200,46.39047619,5.090049279,91.04,2.271211131,1,0,1,0,0,0,0
+Acoustic_AOA_VHF_AOA,3,5,300,60.93650794,6.615049609,47.29633333,3.2398959,0,1,0,0,0,0,0
+Acoustic_AOA_VHF_AOA,3,5,500,81.30952381,11.07590795,25.49933333,5.646250437,0,1,0,0,0,0,0

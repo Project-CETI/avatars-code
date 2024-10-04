@@ -1,0 +1,10 @@
+numpy
+geopy
+pyproj
+geographiclib
+pandas
+matplotlib
+scipy
+do-mpc
+exif
+opencv-python
