@@ -153,7 +153,7 @@ class IA_with_commitment_science(Policy_base):
         return avg_cost, u0_final2, states_greedy, avg_cost_distance_based
 
     def get_cost_of_single_assignment(self, state: Belief_State):
-        # TODO if surface_interval_scenario is given as an input for get_cost_of_single_assignment?
+        
         avg_cost = 0
 
         avg_cost_distance_based = 0
@@ -342,7 +342,7 @@ class IA_with_commitment_science(Policy_base):
                 wid = nwid_to_wid[nwid]
                 bid = nbid_to_bid[nbid]
                 st = state.state_copy(bid, wid)
-                # TODO if surface_interval_scenario is given as an input for get_cost_of_single_assignment?
+                
                 if self.CE == True:
                     st.surface_interval_scenario = [self.future_scenario_ia[wid]]
                     output = self.get_cost_of_single_assignment_for_a_scene(st)

@@ -17,8 +17,6 @@ class Filter:
     def state_estimation(self, observation):
         pass
 
-#TODO: change code such that more than one receiver can be present
-# observation.receiver_current_loc, current_receiver_error, current_observed_AOA -> make them list to numpy
 
 class Adaptive_UKF_ARCTAN(Filter):
     
@@ -65,7 +63,7 @@ class Adaptive_UKF_ARCTAN(Filter):
     def initialize_filter(self, mean: np.ndarray, covariance: np.ndarray):
         self.hat_x_k = np.zeros(self.n).reshape(self.n, 1)
         s = mean.shape[0]
-        self.hat_x_k[:s,0] = mean # TODO: shape?
+        self.hat_x_k[:s,0] = mean 
         self.P_k = np.copy(self.Q)
         if self.parameters.experiment_type == 'Benchmark_Shane_Data':
             self.P_k = np.copy(covariance)
@@ -209,7 +207,7 @@ class Adaptive_UKF_ARCTAN(Filter):
             self.U = cholesky(U)
         except Exception as e:
             print('Issue with matrix decomposition: ', e)
-            #TODO: here
+            
             try:
                 if not self.isPD(U): # is not positive definite Do something   
                     U = self.find_nearest_PSD(U)
@@ -274,7 +272,7 @@ class Adaptive_UKF_ARCTAN(Filter):
                 error_YY = angle_diff_degree(all_observations[:, i], predicted_z[:,0]).reshape(R_shape, 1)
                 error_cov_XY += np.matmul(error_XX, np.transpose(error_YY)) * Wc[i]
         
-            K = np.dot(error_cov_XY, np.linalg.inv(error_cov_YY)) # TODO: dot or matmul
+            K = np.dot(error_cov_XY, np.linalg.inv(error_cov_YY)) 
             self.hat_x_k = predicted_x + np.matmul(K, observation_error)
             self.P_k = predicted_P - np.matmul(K, np.matmul(error_cov_YY, np.transpose(K)))  # when obs is too large P is non-positive definte
 
@@ -389,7 +387,7 @@ class Adaptive_UKF_ARCTAN(Filter):
             self.U = cholesky(U)
         except Exception as e:
             print('Issue with matrix decomposition: ', e)
-            #TODO: here
+            
             try:
                 if not self.isPD(U): # is not positive definite Do something   
                     U = self.find_nearest_PSD(U)
@@ -422,11 +420,7 @@ class Adaptive_UKF_ARCTAN(Filter):
         if observation.current_receiver_error == None:
             observed_z = None
 
-        # TODO: revert
-        # if self.parameters.experiment_type == 'Combined_Dominica_Data':
-        #     observed_z = self.extract_observed_value(observation)
-        # else:
-         
+        
         if self.parameters.observation_type in ['Acoustic_AOA_no_VHF', 'Acoustic_AOA_VHF_AOA']:
             if observation.current_observed_AOA_candidate1 is None or (isinstance(observation.current_observed_AOA_candidate1, list) \
                 and any([obs is None for obs in observation.current_observed_AOA_candidate1])) \
@@ -506,7 +500,7 @@ class Adaptive_UKF_ARCTAN(Filter):
                     
                     error_cov_XY += np.matmul(error_XX, np.transpose(error_YY)) * Wc[i]
 
-            K = np.dot(error_cov_XY, np.linalg.inv(error_cov_YY)) # TODO: dot or matmul
+            K = np.dot(error_cov_XY, np.linalg.inv(error_cov_YY)) 
             self.hat_x_k = predicted_x + np.matmul(K, observation_error)
             self.P_k = predicted_P - np.matmul(K, np.matmul(error_cov_YY, np.transpose(K)))  # when obs is too large P is non-positive definte
 
@@ -519,10 +513,7 @@ class Adaptive_UKF_ARCTAN(Filter):
 
             if self.parameters.observation_type in ['Acoustic_AOA_no_VHF', 'Acoustic_AOA_VHF_AOA']:
                 new_angle = self.observation_function_noniose(self.hat_x_k, observation)
-                #TODO: revert
-                # if self.parameters.experiment_type == 'Combined_Dominica_Data':
-                #     self.post_estimation_observation_error = angle_diff_degree(observed_z, new_angle)[0,0]
-                # else:
+                
                 self.post_estimation_observation_error = min(angle_diff_degree(observed_z[0], new_angle)[0,0], angle_diff_degree(observed_z[1], new_angle)[0,0])
 
             if self.dive_phase_data_collection_start == True:

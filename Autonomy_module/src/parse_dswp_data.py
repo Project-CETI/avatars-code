@@ -11,7 +11,6 @@ import traceback
 from src.configs.constants import *
 from scipy.stats import truncnorm 
 
-# TODO: can have ablation in sensing errror, intermittent sensing etc
 def parse_dswp_data(knowledge: Global_knowledge, date_list = None, idn_list = None):
     
     date_cols = ['DateTime']
@@ -117,7 +116,7 @@ def append_missing_surfacing_and_fill_gap_in_trajectory(data_dict, date_list, id
         for index in range(1, len(ts)):
            
             if ts[index] - ts[index-1] >= (knowledge.down_time_mean * 60 + knowledge.surface_time_mean * 60):
-                #TODO: this logic is not introducing surface time uncertainties 
+                
                 num_new_points = math.floor((ts[index] - ts[index-1]) / (knowledge.down_time_mean * 60 + knowledge.surface_time_mean * 60))
 
                 # if num_new_points > 1:

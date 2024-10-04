@@ -81,19 +81,7 @@ class Visualize_file:
                     else:
                         w_as = list(map(bool, w_as_))
 
-                    if 1==2:
-                        w_last_ss = list(map(int, elms[12].split(',')))
-                        w_last_ss = [int(ss / number_of_observations_per_minute) for ss in w_last_ss]
-                        se = elms[13].rstrip().split(',')
-                        w_last_se = [0 for _ in range(self.num_whales)]
-                        for wid in range(self.num_whales):
-                            w_last_se[wid] = int(int(se[wid])/number_of_observations_per_minute) \
-                                if se[wid] != 'None' and se[wid] != 'nan' else w_last_ss[wid] - 10
-
-                        w_ups = [0 for _ in range(self.num_whales)]
-                        for wid in range(self.num_whales):
-                            if t_ >= w_last_ss[wid] and (w_last_ss[wid] > w_last_se[wid] or t_<=w_last_se[wid]): 
-                                w_ups[wid] = 1
+                    
 
 
                     self.data[t_] = Vis_state(num_boats = self.num_boats, b_xs = b_xs, b_ys = b_ys, \

@@ -171,7 +171,7 @@ class VRP_TW(Policy_base):
     
         routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
         time = 'Time'
-        routing.AddDimension( # TODO: fix these parameters later
+        routing.AddDimension( 
             transit_callback_index,
             200,  # allow waiting time
             200,  # maximum time per vehicle

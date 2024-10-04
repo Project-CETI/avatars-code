@@ -36,7 +36,7 @@ class Rollout_Bel_class():
         init_time = self.time
         while len(self.assigned_whales) == initial_num_assigned:
             self.time += 1
-            if self.time - init_time > 180: #TODO: not correct
+            if self.time - init_time > 180:
                 break
             for abid in bid_wid_assignement:
                 awid = bid_wid_assignement[abid]
@@ -121,7 +121,7 @@ class MA_Rollout_science(Policy_base):
 
     def generate_future_scenarios(self, state: Belief_State, current_wids: t.List[int]):
         future_scenarios = []
-        p = [] #TODO use prob for these
+        p = [] 
         if self.number_of_scenarios == 1:
             future_scenario = {wid:[] for wid in range(state.number_of_whales)}
             for wid in range(state.number_of_whales):
@@ -311,7 +311,7 @@ class MA_Rollout_science(Policy_base):
                     total_cost += stage_cost * num_unassigned + distace_traveled
                 else:
                     total_cost += stage_cost * num_unassigned
-                current_assignment = self.get_control_assignment(state_scene) # TODO: Do I need to keep the assignment for the first step where bid not in bid_to_finish_first
+                current_assignment = self.get_control_assignment(state_scene) 
                 if time_taken_scene > int(self.knowledge.n_horizon_for_evaluation/self.div):
                     break
 
@@ -328,7 +328,7 @@ class MA_Rollout_science(Policy_base):
             for nwid in range(len_nwid_to_wid):
                 wid = nwid_to_wid[nwid]
                 bid = nbid_to_bid[nbid]
-                # TODO: Why does not it consider the surface scenario?
+                
                 time = state.time_to_reach(wid, bid)
                 
                 cost[nbid, nwid] = time
@@ -378,12 +378,12 @@ class MA_Rollout_science(Policy_base):
     
     def get_control(self, state: Belief_State):
         if state.number_of_whales > 10:
-            # todo: if number of agents greater than 10 spawn parallel threads
+            
             raise NotImplemented
         final_btheta_bv = {}
         bids_to_exclude = []
         if state.time % self.knowledge.observations_per_minute == 0:
-            # TODO: USE Latest AOA if we do not see a whale at place? visual AOA from the agent itself ?
+            
 
             self.bid_whale_assignment = {}
             if self.direction:

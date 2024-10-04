@@ -9,8 +9,6 @@ from casadi import *
 from src.configs.constants import *
 from src.global_knowledge import Global_knowledge
 
-# TODO: fix belief state
-# Write rollout policy
 
 
 
@@ -53,12 +51,7 @@ class Belief_State:
             self.w_theta = np.random.uniform(-np.pi, np.pi, size = number_of_whales) if w_theta is None else w_theta
             self.w_v = Whale_speed_mtpm * np.ones(number_of_whales) if w_v is None else w_v
             self.w_Pcov = Pcov
-            # if w_nextup_phase is None:
-            #     self.w_nextup_phase = np.random.uniform(-np.pi, np.pi, size = number_of_whales) 
-            # else:
-            #     self.w_nextup_phase = w_nextup_phase
-
-            # self.whale_up_deprecated = np.array([np.sin(2 * np.pi * self.knowledge.frequency_sine * self.time + self.w_nextup_phase[wid]) > self.knowledge.sine_threshold for wid in range(self.number_of_whales)])
+            
             
             self.assigned_whales = assigned_whales
 
@@ -193,178 +186,23 @@ class Belief_State:
                 continue
             if w_assigned is not None and w_assigned[wid] is not None and w_assigned[wid] and wid not in self.assigned_whales:                 
                 self.assigned_whales.append(wid)
-                #TODO: Debug later why was this necessary?
                 continue
             if ground_truth_for_evaluation is None:
 
-                # if self.knowledge.use_GPS_coordinate_from_dataset:
-                #     if any([self.knowledge.get_distance_from_latLon_to_meter(self.w_y[wid], self.w_x[wid], self.b_y[bid], self.b_x[bid]) \
-                #         <= self.knowledge.tagging_distance \
-                #             and self.whale_up2[wid] for bid in range(self.number_of_boats)]) :
-                #         self.assigned_whales.append(wid)
-                # else:
                 if any([np.sqrt( (self.w_x[wid] - self.b_x[bid])**2 + (self.w_y[wid] - self.b_y[bid])**2 ) \
                     <= self.knowledge.tagging_distance \
                         and self.whale_up2[wid] for bid in range(self.number_of_boats)]) :
                     self.assigned_whales.append(wid)
             else:
                 continue
-                # if self.knowledge.use_GPS_coordinate_from_dataset:
-                #     if any([self.knowledge.get_distance_from_latLon_to_meter(ground_truth_for_evaluation[wid][1], \
-                #         ground_truth_for_evaluation[wid][0], self.b_y[bid], self.b_x[bid]) \
-                #             <= self.knowledge.tagging_distance \
-                #                 and self.whale_up2[wid] for bid in range(self.number_of_boats)]) :
-                #         self.assigned_whales.append(wid)
-                #     else:
-                #         for bid in range(self.number_of_boats):
-                #             if self.knowledge.get_distance_from_latLon_to_meter(self.w_y[wid], self.w_x[wid], self.b_y[bid], self.b_x[bid]) \
-                #                 <= self.knowledge.tagging_distance and self.whale_up2[wid] :
-                #                 bearing = self.knowledge.get_bearing_from_p1_p2(self.b_x[bid], self.b_y[bid], \
-                #                         ground_truth_for_evaluation[wid][0], ground_truth_for_evaluation[wid][1])
-                #                 if bid not in self.agent_loc_aoa.keys():
-                #                     self.agent_loc_aoa[bid] = [bearing]
-                #                 else:
-                #                     self.agent_loc_aoa[bid].append(bearing)
-                # else:
-                if any([np.sqrt( (ground_truth_for_evaluation[wid][0] - self.b_x[bid])**2 + \
-                    (ground_truth_for_evaluation[wid][1] - self.b_y[bid])**2 ) \
-                        <= self.knowledge.tagging_distance \
-                            and self.whale_up2[wid] for bid in range(self.number_of_boats)]) :
-                    self.assigned_whales.append(wid)
-                else:
-                    for bid in range(self.number_of_boats):
-                        if np.sqrt( (self.w_y[wid] - self.b_y[bid])**2 + (self.w_x[wid] - self.b_x[bid])**2) \
-                            <= self.knowledge.tagging_distance and self.whale_up2[wid] :
-                            bearing = np.arctan2(ground_truth_for_evaluation[wid][1] - self.b_y[bid], \
-                                ground_truth_for_evaluation[wid][0] - self.b_x[bid])
-                            d = np.sqrt( (ground_truth_for_evaluation[wid][1] - self.b_y[bid])**2 + (ground_truth_for_evaluation[wid][0] - self.b_x[bid])**2)
-                            self.agent_loc_aoa[bid] = (bearing, wid)
+                
                                 
         return self.stage_cost()
 
-    def next_state_future_unused(self, time_delta, current_assignment, CE = 1):
-        w_locs = {wid: [(self.w_x[wid], self.w_y[wid])] for wid in range(self.number_of_whales)}
-        for wid in range(self.number_of_whales):
-            for t in range(1, int(time_delta) + 1):
-                
-                wx = w_locs[wid][-1][0] + self.w_v[wid] * np.cos(self.w_theta[wid])
-                wy = w_locs[wid][-1][1] + self.w_v[wid] * np.sin(self.w_theta[wid])
-        
-                w_locs[wid].append((wx, wy))
-                if CE == 1:
-                    if self.whale_up2[wid] == True:
-                        if self.time + t - self.w_last_surface_start_time[wid] >= self.knowledge.surface_time_mean:
-                            self.whale_up2[wid] = False
-                            self.w_last_surface_end_time[wid] = self.time + t - 1
-                    else:
-                        if self.time + t - self.w_last_surface_end_time[wid] >= self.knowledge.down_time_mean:
-                            self.whale_up2[wid] = True
-                            self.w_last_surface_start_time[wid] = self.time + t# - 1
-                else:
-                    scene = self.surface_interval_scenario[wid]
-                    if self.whale_up2[wid] == True:
-                        # try:
-                        surface_end_time = [int_end_time for (int_start_time, int_end_time) in scene \
-                            if self.w_last_surface_start_time[wid] == int_start_time ][0]
-                        # except Exception as e:
-                        #     a = scene, self.w_last_surface_start_time[wid]
-                        #     print(e, a)
-
-                        if self.time + t == surface_end_time:
-                            self.whale_up2[wid] = False
-                            self.w_last_surface_end_time[wid] = self.time + t -1 # todo: should there be a -1
-                    else:
-                        # try:
-                        surface_start_time = [scene[int_id + 1][0] for int_id in range(len(scene) - 1) \
-                            if self.w_last_surface_end_time[wid] == scene[int_id][1]][0]
-                        # except Exception as e:
-                        #     a = scene, self.w_last_surface_end_time[wid]
-                        #     print(e, a)
-                        if self.time + t == surface_start_time:
-                            self.whale_up2[wid] = True
-                            self.w_last_surface_start_time[wid] = self.time + t #- 1 # todo: should there be a -1
-
-        b_locs = {bid: [(self.b_x[bid], self.b_y[bid])] for bid in range(self.number_of_boats)}
-        total_movement_of_boats = 0
-        for bid in current_assignment.keys():
-            for t in range(1, int(time_delta) + 1):
-                wid = current_assignment[bid]
-                target_loc = (w_locs[wid][-1][0], w_locs[wid][-1][1])
-                source_loc = (b_locs[bid][-1][0], b_locs[bid][-1][1])
-
-                btheta = np.arctan2(target_loc[1] - source_loc[1], target_loc[0] - source_loc[0])
-                bv = min(self.knowledge.boat_max_speed_mtpm, np.sqrt((target_loc[1] - source_loc[1])**2 + (target_loc[0] - source_loc[0])**2))
-                bx = source_loc[0] + bv * np.cos(btheta)
-                by = source_loc[1] + bv * np.sin(btheta)
-                b_locs[bid].append((bx, by))
-
-                total_movement_of_boats += bv / self.knowledge.boat_max_speed_mtpm
-        self.time += int(time_delta)
-        
-        self.w_x = np.array([w_locs[wid][-1][0] for wid in range(self.number_of_whales)])
-        self.w_y = np.array([w_locs[wid][-1][1] for wid in range(self.number_of_whales)])
-
-        self.b_x = np.array([b_locs[bid][-1][0] for bid in range(self.number_of_boats)])
-        self.b_y = np.array([b_locs[bid][-1][1] for bid in range(self.number_of_boats)])
-
-        return total_movement_of_boats
     
-    def next_state_future_fast_unused(self, time_delta, current_assignment, CE = 1):
-        
-        w_locs = {wid: (self.w_x[wid], self.w_y[wid]) for wid in range(self.number_of_whales)}
-        
-        for wid in range(self.number_of_whales):
-            w_locs[wid] = (w_locs[wid][0] + time_delta * self.w_v[wid] * np.cos(self.w_theta[wid]), \
-                w_locs[wid][1] + time_delta * self.w_v[wid] * np.sin(self.w_theta[wid]))
-            
-            for interval_id in range(len(self.surface_interval_scenario[wid])):
-                interval = self.surface_interval_scenario[wid][interval_id]
-                previous_interval = self.surface_interval_scenario[wid][interval_id - 1] if interval_id > 0 else None
-                if (self.time >= interval[0] and self.time <= interval[1]):
-                    self.whale_up2[wid] = True
-                    self.w_last_surface_start_time[wid] = interval[0]
-                    break
-                elif ((previous_interval is not None and self.time > previous_interval[1]) or interval_id == 0)\
-                    and self.time < interval[0]:
-                    self.whale_up2[wid] = False
-                    self.w_last_surface_end_time[wid] = previous_interval[1]
-                    break
-                    
-        b_locs = {bid: (self.b_x[bid], self.b_y[bid]) for bid in range(self.number_of_boats)}
-        total_movement_of_boats = 0
-        for bid in current_assignment.keys():
-            wid = current_assignment[bid]
-            target_loc = (w_locs[wid][0], w_locs[wid][1])
-            source_loc = (b_locs[bid][0], b_locs[bid][1])
-            btheta = np.arctan2(target_loc[1] - source_loc[1], target_loc[0] - source_loc[0])
-            b_move = min(time_delta * self.knowledge.boat_max_speed_mtpm, \
-                np.sqrt((target_loc[1] - source_loc[1])**2 + (target_loc[0] - source_loc[0])**2))
-            bx = source_loc[0] + b_move * np.cos(btheta)
-            by = source_loc[1] + b_move * np.sin(btheta)
-            b_locs[bid] = (bx, by)
-            total_movement_of_boats += b_move / self.knowledge.boat_max_speed_mtpm
-
-        self.time += int(time_delta)
-        self.w_x = np.array([w_locs[wid][0] for wid in range(self.number_of_whales)])
-        self.w_y = np.array([w_locs[wid][1] for wid in range(self.number_of_whales)])
-        self.b_x = np.array([b_locs[bid][0] for bid in range(self.number_of_boats)])
-        self.b_y = np.array([b_locs[bid][1] for bid in range(self.number_of_boats)])
-
-        return total_movement_of_boats
     
 
     def terminal(self):
-        # if self.number_of_boats > 1:
-        #     w = 0
-        #     for wid in range(self.number_of_whales):
-        #         x = np.array([(self.b_x[bid] - self.w_x[wid])**2 + (self.b_y[bid] - self.w_y[wid])**2 for bid in range(self.number_of_boats)])
-        #         if np.any(x<100):
-        #             w += 1
-        #     if w == self.number_of_whales:
-        #         return True
-        #     return False
-        # if np.abs(self.b_x[0] - np.mean(self.w_x)) < 5 and np.abs(self.b_y[0] - np.mean(self.w_y)) < 5:
-        #     return True
         if len(self.assigned_whales) == self.number_of_whales:
             return True
         return False
@@ -389,11 +227,7 @@ class Belief_State:
         plt.cla()
         
 
-        # if not self.knowledge.use_GPS_coordinate_from_dataset:
-        if 1==2:
-            for bid in range(self.number_of_boats):
-                viewing_radius_bid = pat.Circle((self.b_x[bid], self.b_y[bid]), color = 'b', alpha=0.1, radius = self.knowledge.tagging_distance)
-                plt.gca().add_patch(viewing_radius_bid)
+        
         
         if not hasattr(self, 'history'):
             self.history = {'boats': {bid: {'x': [], 'y': []} for bid in range(self.number_of_boats)}, \

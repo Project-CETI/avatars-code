@@ -87,10 +87,7 @@ class State_Estimation_Filter:
                                     Pcov = Pcov)
     
     def get_next_estimation(self, observation: ObservationClass):
-        if 1==2 and self.parameters.experiment_type == 'Benchmark_Shane_Data':
-            observations_x_y_v_theta_up = np.zeros(shape= (observation.number_of_whales, 5))
-        else:
-            observations_x_y_v_theta_up = np.zeros(shape= (observation.number_of_whales, 7))
+        observations_x_y_v_theta_up = np.zeros(shape= (observation.number_of_whales, 7))
         cov = {wid: None for wid in range(observation.number_of_whales)}
         for wid in range(observation.number_of_whales):
             if self.parameters.speed_based_rendezvous == True and \

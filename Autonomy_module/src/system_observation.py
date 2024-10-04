@@ -53,8 +53,7 @@ class ObservationClass:
             self.last_surface_start_time[wid] = start_times_before[-1] if len(start_times_before) > 0 else np.nan
             self.last_surface_end_time[wid] = end_times_before[-1] if len(end_times_before) > 0 else np.nan
 
-        # self.last_surface_start_time = self.last_surface_start_time.astype(int)
-        # self.last_surface_end_time = self.last_surface_end_time.astype(int)
+        
 
         self.current_whale_assigned = gt.current_whale_assigned
         self.current_agent_xs: np.ndarray = gt.current_agent_xs
@@ -69,11 +68,7 @@ class ObservationClass:
                 self.data_max_x_wid = gt.data_max_x_wid
 
             for wid in range(self.number_of_whales):
-                if 1==2 and self.parameters.experiment_type == 'Combined_Dominica_Data':
-                    self.initial_observation[wid] = np.random.multivariate_normal \
-                    (np.array([gt.current_whale_xs[wid], gt.current_whale_ys[wid]]), \
-                        self.parameters.initial_obs_xy_error)
-                elif self.parameters.experiment_type in ['Benchmark_Shane_Data', 'Feb24_Dominica_Data', 'Combined_Dominica_Data']:
+                if self.parameters.experiment_type in ['Benchmark_Shane_Data', 'Feb24_Dominica_Data', 'Combined_Dominica_Data']:
                     self.initial_observation[wid] = gt.extra_info_from_experiment['initial_observation'][wid]
                     self.initial_observation_cov[wid] = gt.extra_info_from_experiment['initial_observation_cov'][wid]
                     
@@ -102,20 +97,8 @@ class ObservationClass:
             else:
                 self.vhf_taken[wid] = True
 
-            # self.vhf_taken[wid] = True \
-            #     if self.current_whale_up[wid] and wid in self.vhf_taken.keys() and not self.vhf_taken[wid] else False 
-                # TODO: Check the this logic for vhf_taken. We want only one vhf_taken per surfacing 
-
-            if 1==2 and self.parameters.experiment_type in ['Combined_Dominica_Data']:
-                self.current_receivers_loc[wid] = []
-                self.current_receiver_error[wid] = []
-                self.current_observed_AOA[wid] = []
-                
-                for sensor, sensed_val in gt.receiver_allw_allt_loc[wid][self.current_time].items():
-                    self.current_receivers_loc[wid].append((sensed_val.sx, sensed_val.sy))
-                    self.current_observed_AOA[wid].append(sensed_val.obs_AOA)
-                    self.current_receiver_error[wid].append(sensed_val.AOA_error_std**2 if sensed_val.AOA_error_std is not None else None)
-            elif self.parameters.experiment_type in ['Feb24_Dominica_Data', 'Combined_Dominica_Data'] or \
+           
+            if self.parameters.experiment_type in ['Feb24_Dominica_Data', 'Combined_Dominica_Data'] or \
             (self.parameters.experiment_type == 'Benchmark_Shane_Data' and self.parameters.observation_type in ['Acoustic_AOA_no_VHF', 'Acoustic_AOA_VHF_AOA']):
                 self.current_receivers_loc[wid] = []
                 self.current_receiver_error[wid] = []
@@ -129,34 +112,7 @@ class ObservationClass:
                         self.current_receiver_error[wid].append(sensed_val.AOA_error_std**2 if sensed_val.AOA_error_std is not None else None)
                 except Exception as e:
                     print(e)
-            elif 1==2 and self.parameters.observation_type in ['Acoustic_AOA_no_VHF', 'Acoustic_AOA_VHF_AOA']:
-                self.current_receivers_loc[wid] = []
-                self.current_receiver_error[wid] = []
-                self.current_observed_AOA[wid] = []
-                for sensor in gt.receiver_allw_allt_loc[wid][self.current_time].keys():
-                    
-                    received_AOA = False
-                    if sensor == 'Towed_array':
-                        self.current_receiver_error[wid].append(self.parameters.Acoustic_AOA_obs_error_std_degree**2)
-                        received_AOA = True
-                    elif sensor == 'VHF_1':
-                        if self.vhf_taken[wid]: # TODO: Revise this logic
-                            self.current_receiver_error[wid].append(self.parameters.Vhf_AOA_obs_error_std_degree**2)                    
-                            received_AOA = True
-                            # self.vhf_taken[wid] = True
-                    else:
-                        self.current_receiver_error[wid].append(self.parameters.Vhf_AOA_obs_error_std_degree**2)
-                        received_AOA = True
-                        
-                    if received_AOA:
-                        self.current_receivers_loc[wid].append(gt.receiver_allw_allt_loc[wid][self.current_time][sensor])
-                        true_aoa = gt.true_allt_AOA[wid][self.current_time][sensor] * Radian_to_degree
-                        error = np.sqrt(self.current_receiver_error[wid][-1]) 
-                        self.current_observed_AOA[wid].append(np.random.normal(true_aoa, error))
-                    # else:
-                    #     print('received_AOA is False')
-                    # print("current_observed_AOA ", self.current_observed_AOA[wid], " in set_observation_t in time ", self.current_time)
-
+            
             elif self.parameters.observation_type in ['Acoustic_xy_no_VHF', 'Acoustic_xy_VHF_xy']:
                 
                 self.current_receiver_error[wid] = []
@@ -167,13 +123,7 @@ class ObservationClass:
                         self.current_observed_xy[wid].append(sensed_val.xy if sensed_val.xy is not None else None)
                 except Exception as e:
                     print(e)
-                # whale_loc = np.array([gt.current_whale_xs[wid], gt.current_whale_ys[wid]])
-                # self.current_receiver_error[wid] = [self.parameters.Vhf_XY_obs_error_cov_m2 \
-                #     if self.current_whale_up[wid] and self.parameters.vhf_obs_type == 'xy' and self.vhf_taken[wid] else \
-                #         self.parameters.Acoustic_XY_obs_error_cov_m2 \
-                #             if self.current_whale_up[wid] == False else None]
-                # if self.current_receiver_error[wid] is not None:
-                #     self.current_observed_xy[wid] = np.random.multivariate_normal(whale_loc, self.current_receiver_error[wid][-1])
+                
                     
                 
             
@@ -191,10 +141,7 @@ class ObservationClass:
                     current_observed_AOA_candidate1 = None, \
                         current_observed_AOA_candidate2 = None,\
                             current_observed_xy = self.current_observed_xy[wid])
-        # return ObservationClass_whale(current_whale_up = self.current_whale_up[wid], current_receiver_error = self.current_receiver_error[wid], \
-        #     receiver_current_loc = self.current_receivers_loc[wid], current_observed_AOA = self.current_observed_AOA[wid], \
-        #         current_observed_xy = self.current_observed_xy[wid])
-    
+        
     def terminal(self):
         if sum(self.current_whale_assigned.values()) == self.number_of_whales:
             return True

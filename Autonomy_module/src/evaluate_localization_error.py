@@ -71,10 +71,7 @@ class EvalObjectClass:
         plt.cla()
         
         for wid in range(raw_obs.number_of_whales):
-            # TODO: plot current receivers for wid
-            # plt.scatter(raw_obs.current_receivers_loc[wid][0][0], raw_obs.current_receivers_loc[wid][0][1], \
-            #     c = 'cyan' if raw_obs.current_whale_up[wid] else 'green', label ='Receiver current location')
-
+            
             plt.scatter(raw_obs.gt_for_eval[wid, 0], raw_obs.gt_for_eval[wid, 1], \
                 c = 'magenta' if raw_obs.current_whale_up[wid] else 'red', label ='Whale current location')
 
@@ -83,33 +80,19 @@ class EvalObjectClass:
                     plt.scatter(receiver_xy[0], receiver_xy[1], s = 1, \
                         c = 'black' if raw_obs.current_whale_up[wid] else 'red', label ='receiver current location')
         
-            # if raw_obs.parameters.experiment_type == 'Benchmark_Shane_Data':
-            #     plt.scatter(observations_x_y_v_theta_up[wid, 0], observations_x_y_v_theta_up[wid, 1], \
-            #         c = 'royalblue' if raw_obs.current_whale_up[wid] else 'black', label ='Mean whale particles')
-            #     loc_uncertainty = pat.Ellipse((observations_x_y_v_theta_up[wid, 0], observations_x_y_v_theta_up[wid, 1]), \
-            #         color = 'b', alpha=0.1, width = np.sqrt(Pcov[wid][0,0]), height = np.sqrt(Pcov[wid][1,1]))
-            #     plt.gca().add_patch(loc_uncertainty)
-            # else:
+           
             if 1==1:
                 plt.scatter(observations_x_y_v_theta_up[wid, 5], observations_x_y_v_theta_up[wid, 6], \
                     c = 'royalblue' if raw_obs.current_whale_up[wid] else 'black', label ='Mean whale particles')
-                # loc_uncertainty = pat.Ellipse((observations_x_y_v_theta_up[wid, 5], observations_x_y_v_theta_up[wid, 6]), \
-                #     color = 'b', alpha=0.1, width = np.sqrt(Pcov[wid][0,0]), height = np.sqrt(Pcov[wid][1,1]))
-                # plt.gca().add_patch(loc_uncertainty)
+               
             
             
-            # r_xs = [r[0] for r in self.r_locs[wid]]
-            # r_ys = [r[1] for r in self.r_locs[wid]]
-            # plt.scatter(r_xs, r_ys, \
-            #     label = 'Receivers previous locations', c = np.array(['cyan' if w_up else 'green' for w_up in self.ups[wid]]), s = 1)
+           
 
             plt.scatter(self.gt_x[wid], self.gt_y[wid], \
                 label = 'Whale true previous locations', c = np.array(['magenta' if w_up else 'red' for w_up in self.ups[wid]]), s = 1)
             
-            # if raw_obs.parameters.experiment_type == 'Benchmark_Shane_Data':
-            #     plt.scatter(self.loc_x[wid], self.loc_y[wid], label = 'Previous mean whale particles', \
-            #         c = np.array(['royalblue' if w_up else 'black' for w_up in self.ups[wid]]), s = 1)
-            # else:
+           
             if 1==1:
                 plt.scatter(self.loc_long[wid], self.loc_lat[wid],\
                     label = 'Previous mean whale particles', \

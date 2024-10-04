@@ -310,59 +310,7 @@ if __name__ == '__main__':#evalmetric':
             all_metric_summarized = pickle.load(f)
     
 
-    def unused_plot_metric():
-        params = [(na,num_agent, nw, num_whale, date_combi_id) \
-            for no, obs in enumerate(observation_types) \
-                for na,num_agent in enumerate(num_agents) \
-                    for nw,num_whale in enumerate(num_whales)\
-                        for date_combi_id, date_combi in enumerate(combinations_of_dates[num_whale])
-        ]
-        # print(params)
-        #  \
-        #                 if num_whale in [5,6] or num_agent == 2]
     
-        print([','.join(map(str,[obs, num_agent,num_whale,date_combi_id])) for no, obs, na,num_agent,nw,num_whale,date_combi_id in params])
-        for mname in metric_result_keys:
-            min_y = 100
-            max_y = 0
-            fig = plt.figure()
-            ax = fig.add_subplot(111)    
-            width = 0.1
-            for nt, tagging_radius in enumerate(tagging_radii):
-                # if tagging_radius in [200, 400]:
-                #     continue
-                # print(all_metric[mname])
-                m_mean = [all_metric[mname][no][na][nw][date_combi_id][nt][0] \
-                    for no, obs,na,num_agent,nw,num_whale,date_combi_id in params]
-                m_std = [all_metric[mname][no][na][nw][date_combi_id][nt][1] \
-                    for no, obs,na,num_agent,nw,num_whale,date_combi_id in params]
-                # print(ser)
-                bars = ax.bar(np.arange(len(m_mean)) + width * nt, m_mean, width, yerr = m_std, label = 'r_'+str(tagging_radius))
-
-                for bid, bar in enumerate(bars):
-                    height = bar.get_height() + m_std[bid]
-                    ax.text(bar.get_x() + bar.get_width() / 2, height, str(round(m_mean[bid],1)) + r"$\pm$" + str(round(m_std[bid],1)), ha='center', va='bottom', rotation = 45)
-
-                    min_y = min(min_y, height)
-                    max_y = max(max_y, height)
-        
-        
-            # print(['a_' + str(num_agent) + '_w' + str(num_whale) \
-            #     for na,num_agent in enumerate(num_agents) for nw,num_whale in enumerate(num_whales)])
-            #     #  \
-            #     #     if (num_whale in [5,6] or num_agent == 2)])
-            ax.set_xticks(np.arange(len(params)))
-            ax.set_xticklabels(['a' + str(num_agent) + '_w' + str(num_whale) + '_dt'+str(date_combi_id) \
-                for na,num_agent,nw,num_whale,date_combi_id in params], rotation=20)
-            if mname not in  ['mission_time', 'time_bw_successive_rendezvous']:
-                ax.set_ylim(0, 100)
-            else:
-                ax.set_ylim(0, max_y + 10)
-            plt.legend(ncol = len(tagging_radii))
-            plt.title(mname)
-            plt.savefig(metric_output + "results" + mname + ".png")
-            plt.close()
-
     def plot_summary():
         metrics_to_plot = ['successful_opportunity','mission_time', 'whale_missed_prob']
         
