@@ -1,0 +1,162 @@
+#!/usr/bin/env python
+#################################################################################
+# Copyright 2018 ROBOTIS CO., LTD.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#################################################################################
+
+# Authors: Gilbert #
+# MOdified by Ninad Jadhav for CETI SAR experiments.
+
+import rospy
+from geometry_msgs.msg import Twist, Point, Quaternion
+from nav_msgs.msg import Odometry
+import tf
+from math import radians, copysign, sqrt, pow, pi, atan2
+from tf.transformations import euler_from_quaternion
+import numpy as np
+
+msg = """
+control your Turtlebot3!
+-----------------------
+Insert xyz - coordinate.
+x : position x (m)
+y : position y (m)
+z : orientation z (degree: -180 ~ 180)
+If you want to close, insert 's'
+-----------------------
+"""
+
+
+class GotoPoint():
+    def __init__(self):
+        rospy.init_node('leo_rover_waypoint', anonymous=False)
+        rospy.on_shutdown(self.shutdown)
+        self.cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=5)
+        rospy.Subscriber("/odometry/filtered", Odometry, self.odom_callback)
+        position = Point()
+        self.curr_rotation = 0
+        rotation = 0
+        move_cmd = Twist()
+        r = rospy.Rate(10)
+        last_rotation = 0
+        linear_speed = 0.35 #Max linear speed to use for the rover
+        angular_speed = 0.5 #Max angular speed to use for the rover
+
+        radius = 3.5
+        k = 90
+        waypoint_angles_list = np.linspace(0,2*pi,k)
+        waypoint_x = radius * np.cos(waypoint_angles_list); 
+        waypoint_y = radius * np.sin(waypoint_angles_list); 
+
+        #Update waypoints to be relative w.r.t the first position
+        waypoint_x = waypoint_x - waypoint_x(0)
+        waypoint_y = waypoint_y - waypoint_y(0)
+        current_waypoint = 0
+
+        while(current_waypoint < len(va)):
+            self.get_gps_odom_position()
+            goal_x = waypoint_x(current_waypoint)
+            goal_y = waypoint_y(current_waypoint)
+            goal_z = waypoint_angles_list(current_waypoint)
+            
+            if goal_z > pi or goal_z < -pi:
+                print("you input wrong z range.")
+                self.shutdown()
+            
+            goal_z = np.deg2rad(goal_z)
+            goal_distance = sqrt(pow(goal_x - self.position.x, 2) + pow(goal_y - self.position.y, 2))
+            distance = goal_distance
+
+            #Navigate to the waypoint
+            while distance > 0.05:
+                position = self.curr_position
+                rotation = self.curr_rotation
+                x_start = position.x
+                y_start = position.y
+                path_angle = atan2(goal_y - y_start, goal_x- x_start)
+
+                if path_angle < -pi/4 or path_angle > pi/4:
+                    if goal_y < 0 and y_start < goal_y:
+                        path_angle = -2*pi + path_angle
+                    elif goal_y >= 0 and y_start > goal_y:
+                        path_angle = 2*pi + path_angle
+                if last_rotation > pi-0.1 and rotation <= 0:
+                    rotation = 2*pi + rotation
+                elif last_rotation < -pi+0.1 and rotation > 0:
+                    rotation = -2*pi + rotation
+                
+                move_cmd.angular.z = angular_speed * path_angle-rotation #Should we hardcode this instead??
+
+                distance = sqrt(pow((goal_x - x_start), 2) + pow((goal_y - y_start), 2))
+                # move_cmd.linear.x = min(linear_speed * distance, 0.1)
+                move_cmd.linear.x = linear_speed #Keep constant velocity, no need to slow down
+
+                if move_cmd.angular.z > 0:
+                    move_cmd.angular.z = min(move_cmd.angular.z, 1.5)
+                else:
+                    move_cmd.angular.z = max(move_cmd.angular.z, -1.5)
+
+                last_rotation = rotation
+                self.cmd_vel.publish(move_cmd)
+                r.sleep()
+            
+            #Verify if this is required or not. Does the robot's angular velocity takes care of the yaw that we need? Since we are moving along a circular trajectory?
+            position = self.curr_position
+            rotation = self.curr_rotation
+            while abs(rotation - goal_z) > 0.01:
+                position = self.curr_position
+                rotation = self.curr_rotation
+                if goal_z >= 0:
+                    if rotation <= goal_z and rotation >= goal_z - pi:
+                        move_cmd.linear.x = 0.00
+                        move_cmd.angular.z = 0.5
+                    else:
+                        move_cmd.linear.x = 0.00
+                        move_cmd.angular.z = -0.5
+                else:
+                    if rotation <= goal_z + pi and rotation > goal_z:
+                        move_cmd.linear.x = 0.00
+                        move_cmd.angular.z = -0.5
+                    else:
+                        move_cmd.linear.x = 0.00
+                        move_cmd.angular.z = 0.5
+                self.cmd_vel.publish(move_cmd)
+                r.sleep()
+
+        rospy.loginfo("Stopping the robot...")
+        self.cmd_vel.publish(Twist())
+
+    def self.odom_callback(self,msg):
+        self.curr_position = msg.pose.pose.position
+        rot = (msg.pose.pose.orientation.x, 
+                 msg.pose.pose.orientation.y, 
+                 msg.pose.pose.orientation.z,
+                 msg.pose.pose.orientation.w)
+        temp = euler_from_quaternion(rot)
+        self.curr_rotation = temp[2]
+
+
+    def shutdown(self):
+        self.cmd_vel.publish(Twist())
+        rospy.sleep(1)
+
+
+if __name__ == '__main__':
+    try:
+        while not rospy.is_shutdown():
+            print(msg)
+            GotoPoint()
+
+    except:
+        rospy.loginfo("shutdown program.")

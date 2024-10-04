@@ -1,0 +1,22 @@
+Mean Center coordinates : (15.275854,-61.454530)
+
+Displacement of TX when AOA is being calculated 16.004779 meters
+
+Groundtruth AOA w.r.t true north from center : 50.353962 degrees
+
+Distance between RX and TX = 283.364990 meters
+
+Mean Center coordinates : (-771.788534,31.763867)
+
+Estimated array Radius: 3.507243
+
+AOA  for Drone data using profile product: Azimuth = 29.582173 , Elevation = 17.180851
+
+Error in AOA estimation- using RX circular trajectory gps center: 20.771789 degree
+
+Mean Error in AOA estimation: 19.574022 degree
+
+Closest true AOA 47.978305 deg
+
+Error in AOA estimation (using closest true AOA): 18.396132 degree
+

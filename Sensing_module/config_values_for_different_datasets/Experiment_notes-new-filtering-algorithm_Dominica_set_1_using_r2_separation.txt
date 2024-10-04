@@ -1,0 +1,152 @@
+
+Mean Center coordinates : (15.275867,-61.454588) 
+Displacement of TX when AOA is being calculated 16.004779 meters 
+Groundtruth AOA w.r.t true north from center : 49.184178 degrees
+Distance between RX and TX = 286.220245 meters
+Mean Center coordinates : (-773.735902,31.632503) 
+Estimated array Radius: 1.100000 
+Reading VHF Data...Time to readfile = 0.014255 seconds
+AOA  for Drone using sub-array profile: Azimuth = 31.587744 , Elevation = 70.786517
+AOA  for Drone data using profile product: Azimuth = 31.587744 , Elevation = 70.786517
+Error in AOA estimation- using RX circular trjaectory gps center: 17.596434 degree 
+49.184178, 31.587744 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): -17.596434 degree 
+Mean Error in AOA estimation: 17.565118 degree 
+Closest true AOA 47.978305 deg 
+Error in AOA estimation (using closest true AOA): 16.390561 degree 
+Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Flight_1/iq_realtime_subsampled_data/vhf_drone_payload_data_21-Nov-2023_14:07:24.mat 
+33          fprintf("-----------------------------------------------------\n");
+-----------------------------------------------------
+
+
+Mean Center coordinates : (15.306214,-61.461237) 
+Displacement of TX when AOA is being calculated 7.068267 meters 
+Groundtruth AOA w.r.t true north from center : 8.384366 degrees
+Distance between RX and TX = 120.140931 meters
+Mean Center coordinates : (-1484.482283,3405.576309) 
+Estimated array Radius: 1.100000 
+Reading VHF Data...Time to readfile = 0.015100 seconds
+AOA  for Drone using sub-array profile: Azimuth = -50.640669 , Elevation = 48.539326
+AOA  for Drone data using profile product: Azimuth = -50.640669 , Elevation = 48.539326
+Error in AOA estimation- using RX circular trjaectory gps center: 59.025034 degree 
+8.384366, -50.640669 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): -59.025034 degree 
+Mean Error in AOA estimation: 59.289917 degree 
+Closest true AOA 6.109392 deg 
+Error in AOA estimation (using closest true AOA): 56.750061 degree 
+Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Flight_2/iq_realtime_subsampled_data/vhf_drone_payload_data_21-Nov-2023_14:32:01.mat 
+33          fprintf("-----------------------------------------------------\n");
+
+
+
+Mean Center coordinates : (15.289136,-61.443346) 
+Displacement of TX when AOA is being calculated 10.477280 meters 
+Groundtruth AOA w.r.t true north from center : 87.399113 degrees
+Distance between RX and TX = 212.455434 meters
+Mean Center coordinates : (434.484950,1507.339465) 
+Estimated array Radius: 1.100000 
+Reading VHF Data...Time to readfile = 0.012157 seconds
+AOA  for Drone using sub-array profile: Azimuth = 80.724234 , Elevation = 90.000000
+AOA  for Drone data using profile product: Azimuth = 80.724234 , Elevation = 90.000000
+Error in AOA estimation- using RX circular trjaectory gps center: 6.674879 degree 
+87.399113, 80.724234 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): -6.674879 degree 
+Mean Error in AOA estimation: 6.813581 degree 
+Closest true AOA 84.767702 deg 
+Error in AOA estimation (using closest true AOA): 4.043468 degree 
+Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Flight_3/iq_realtime_subsampled_data/vhf_drone_payload_data_21-Nov-2023_14:53:59.mat 
+33          fprintf("-----------------------------------------------------\n");
+
+
+Mean Center coordinates : (15.286222,-61.437043) 
+Displacement of TX when AOA is being calculated 13.397575 meters 
+Groundtruth AOA w.r.t true north from center : 91.983654 degrees
+Distance between RX and TX = 159.619921 meters
+Mean Center coordinates : (218.757916,-465.51estimated_azimuth_aoa
+31.587744
+-50.640669
+80.724234
+101.78273
+65.682451
+97.771588
+-168.969359
+137.883008
+113.816156
+-31.587744
+1.504178
+43.62117
+0015) 
+Estimated array Radius: 1.100000 
+Reading VHF Data...Time to readfile = 0.013964 seconds
+AOA  for Drone using sub-array profile: Azimuth = 101.782730 , Elevation = 73.820225
+AOA  for Drone data using profile product: Azimuth = 101.782730 , Elevation = 73.820225
+Error in AOA estimation- using RX circular trjaectory gps center: 9.799076 degree 
+91.983654, 101.782730 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): 9.799076 degree 
+Mean Error in AOA estimation: 9.717114 degree 
+Closest true AOA 93.984482 deg 
+Error in AOA estimation (using closest true AOA): 7.798248 degree 
+Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Flight_4/iq_realtime_subsampled_data/vhf_drone_payload_data_21-Nov-2023_15:30:27.mat 
+33          fprintf("-----------------------------------------------------\n");
+
+
+Mean Center coordinates : (15.275005,-61.426270) 
+Displacement of TX when AOA is being calculated 35.736193 meters 
+Groundtruth AOA w.r.t true north from center : 67.223825 degrees
+Distance between RX and TX = 68.492386 meters
+Mean Center coordinates : (1448.396594,-1722.405854) 
+Estimated array Radius: 1.100000 
+Reading VHF Data...Time to readfile = 0.012782 seconds
+AOA  for Drone using sub-array profile: Azimuth = 64.679666 , Elevation = 80.898876
+AOA  for Drone data using profile product: Azimuth = 64.679666 , Elevation = 80.898876
+Error in AOA estimation- using RX circular trjaectory gps center: 2.544159 degree 
+67.223825, 64.679666 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): -2.544159 degree 
+Mean Error in AOA estimation: 2.409034 degree 
+Closest true AOA 64.695961 deg 
+Error in AOA estimation (using closest true AOA): 0.016295 degree 
+Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Flight_5/iq_realtime_subsampled_data/vhf_drone_payload_data_21-Nov-2023_15:45:05.mat 
+33          fprintf("-----------------------------------------------------\n");
+
+
+-----------------------------------------------------
+Mean Center coordinates : (15.261380,-61.415200) 
+Displacement of TX when AOA is being calculated 17.179630 meters 
+Groundtruth AOA w.r.t true north from center : 88.865990 degrees
+Distance between RX and TX = 87.102880 meters
+Mean Center coordinates : (2562.587770,-3232.141068) 
+Estimated array Radius: 1.100000 
+Reading VHF Data...Time to readfile = 0.013148 seconds
+AOA  for Drone using sub-array profile: Azimuth = 94.763231 , Elevation = 90.000000
+AOA  for Drone data using profile product: Azimuth = 94.763231 , Elevation = 90.000000
+Error in AOA estimation- using RX circular trjaectory gps center: 5.897241 degree 
+88.865990, 94.763231 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): 5.897241 degree 
+Mean Error in AOA estimation: 6.154920 degree 
+Closest true AOA 91.647921 deg 
+Error in AOA estimation (using closest true AOA): 3.115310 degree 
+Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Flight_6/iq_realtime_subsampled_data/vhf_drone_payload_data_21-Nov-2023_16:00:53.mat 
+33          fprintf("-----------------------------------------------------\n");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

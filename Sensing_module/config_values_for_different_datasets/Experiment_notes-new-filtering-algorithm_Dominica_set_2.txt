@@ -1,0 +1,329 @@
+Dominica_set_2
+
+Antenna Gain: 40
+sampling rate:71.428KHz
+subsampling factor = 32
+bandwidth = 200KHz
+saved all SDR data from RPi, AOA computed using downsampling before data transfer to remote laptop
+
+%RX antenna 1 was attached to the front of the drone and RX antenna 2 was attached to the back of the drone. Code has been changed 
+accordingly and this will the formal setup for now.
+
+%RX motion - circular trajectory
+Sub arrays used  = 2
+
+Custom tag Matlab parameters:
+    frequency = 148.700e6 MHz
+    pulse_dur = 0.08;
+    pulse_rep = 1.07;
+    thrshld = 0.5; %For custom tag
+    duty_cycle_buffer = 1;
+    div_val = 7.5
+    pulse_sunset = 3;
+    dowmsample_h_list = false
+
+--------------------------------------------------
+Flight 1 - Custom Tag
+--------------------------------------------------
+The Engineered whale (CETI-2) was drifitng (emulating the logging surface behavior of a whale).
+
+Sample 1 - Yes
+Mean Center coordinates : (15.218609,-61.441995) 
+Displacement of TX when AOA is being calculated 5.495437 meters 
+Groundtruth AOA w.r.t true north from center : -161.779787 degrees
+Distance between RX and TX = 102.896079 meters
+Mean Center coordinates : (-209.616886,-45.347016) 
+Estimated array Radius: 4.731870 
+Reading VHF Data...Time to readfile = 0.007781 seconds
+AOA  for Drone using sub-array profile: Azimuth = -168.969359 , Elevation = 13.138298
+AOA  for Drone using sub-array profile: Azimuth = -168.969359 , Elevation = 13.138298
+AOA  for Drone data using profile product: Azimuth = -168.969359 , Elevation = 13.138298
+Error in AOA estimation- using RX circular trjaectory gps center: 7.189572 degree 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): -7.189572 degree 
+Mean Error in AOA estimation: 8.581112 degree 
+Closest true AOA -162.970838 deg 
+Error in AOA estimation (using closest true AOA): 5.998522 degree 
+Profile Variance = 0.000000
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_1/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_11:02:18.mat 
+
+Sample 2- invalid - taken during drone landing.
+Mean Center coordinates : (15.218597,-61.442133) 
+Displacement of TX when AOA is being calculated 6.358806 meters 
+Groundtruth AOA w.r.t true north from center : -163.208349 degrees
+Distance between RX and TX = 98.988141 meters
+Mean Center coordinates : (-242.676054,102.915229) 
+Estimated array Radius: 134.796783 
+Reading VHF Data...Time to readfile = 0.009470 seconds
+AOA  for Drone using sub-array profile: Azimuth = 50.640669 , Elevation = 66.702128
+AOA  for Drone using sub-array profile: Azimuth = 50.640669 , Elevation = 65.691489
+AOA  for Drone data using profile product: Azimuth = 50.640669 , Elevation = 65.691489
+Error in AOA estimation- using RX circular trjaectory gps center: 146.150983 degree 
+Mean Error in AOA estimation: 155.997958 degree 
+Closest true AOA -163.208349 deg 
+Error in AOA estimation (using closest true AOA): 146.150983 degree 
+Profile Variance = 11675.538875
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_1/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_11:03:22.mat 
+>> 
+
+--------------------------------------------------
+Flight 2 - Custom Tag
+--------------------------------------------------
+The Engineered whale (CETI-2) was moving (emulating the travelling surface behavior of a whale).
+Used div_val = 3.5 as there were some noisy samples
+
+Sample 1 - Yes
+Mean Center coordinates : (15.211239,-61.427529) 
+Displacement of TX when AOA is being calculated 48.298157 meters 
+Groundtruth AOA w.r.t true north from center : 125.659297 degrees
+Distance between RX and TX = 150.372464 meters
+Mean Center coordinates : (1341.168061,-868.979066) 
+Estimated array Radius: 3.898398 
+Reading VHF Data...Time to readfile = 0.007117 seconds
+AOA  for Drone using sub-array profile: Azimuth = 137.883008 , Elevation = 29.308511
+AOA  for Drone using sub-array profile: Azimuth = 137.883008 , Elevation = 29.308511
+AOA  for Drone data using profile product: Azimuth = 137.883008 , Elevation = 29.308511
+Error in AOA estimation- using RX circular trjaectory gps center: 12.223711 degree 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): 12.223711 degree 
+Mean Error in AOA estimation: 12.196529 degree 
+Closest true AOA 127.370920 deg 
+Error in AOA estimation (using closest true AOA): 10.512088 degree 
+Profile Variance = 0.000000
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_2/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_11:25:35.mat 
+
+Sample 2 - Invalid - Taken during drone landing.
+Mean Center coordinates : (15.211671,-61.427763) 
+Displacement of TX when AOA is being calculated 16.585108 meters 
+Groundtruth AOA w.r.t true north from center : 171.469442 degrees
+Distance between RX and TX = 97.751679 meters
+Mean Center coordinates : (1283.898617,-865.745170) 
+Estimated array Radius: 38.541459 
+Reading VHF Data...Time to readfile = 0.007371 seconds
+AOA  for Drone using sub-array profile: Azimuth = -180.000000 , Elevation = 0.000000
+AOA  for Drone using sub-array profile: Azimuth = -180.000000 , Elevation = 0.000000
+AOA  for Drone data using profile product: Azimuth = -180.000000 , Elevation = 0.000000
+Error in AOA estimation- using RX circular trjaectory gps center: 8.530558 degree 
+Mean Error in AOA estimation: 18.218637 degree 
+Closest true AOA 171.469442 deg 
+Error in AOA estimation (using closest true AOA): 8.530558 degree 
+Profile Variance = 10699.365394
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_2/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_11:26:36.mat 
+
+--------------------------------------------------
+Flight 3 - Custom Tag
+--------------------------------------------------
+The Engineered whale (CETI-2) was moving (emulating the travelling surface behavior of a whale).
+
+Sample 1 - Yes
+Mean Center coordinates : (15.208416,-61.413145) 
+Displacement of TX when AOA is being calculated 52.380795 meters 
+Groundtruth AOA w.r.t true north from center : 132.348694 degrees
+Distance between RX and TX = 102.104146 meters
+Mean Center coordinates : (2885.251355,-1181.617217) 
+Estimated array Radius: 4.669470 
+Reading VHF Data...Time to readfile = 0.008219 seconds
+AOA  for Drone using sub-array profile: Azimuth = 113.816156 , Elevation = 14.148936
+AOA  for Drone using sub-array profile: Azimuth = 113.816156 , Elevation = 14.148936
+AOA  for Drone data using profile product: Azimuth = 113.816156 , Elevation = 14.148936
+Error in AOA estimation- using RX circular trjaectory gps center: 18.532538 degree 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): -18.532538 degree 
+Mean Error in AOA estimation: 18.658445 degree 
+Closest true AOA 129.671579 deg 
+Error in AOA estimation (using closest true AOA): 15.855423 degree 
+Profile Variance = 0.000000
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_3/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_11:47:15.mat 
+
+Sample 2 - invalid -taken during drone landing.
+Mean Center coordinates : (15.208250,-61.414219) 
+Displacement of TX when AOA is being calculated 51.617283 meters 
+Groundtruth AOA w.r.t true north from center : 129.579793 degrees
+Distance between RX and TX = 54.526177 meters
+Mean Center coordinates : (2815.127544,-1177.254725) 
+Estimated array Radius: 30.222885 
+Reading VHF Data...Time to readfile = 0.007506 seconds
+AOA  for Drone using sub-array profile: Azimuth = -117.827298 , Elevation = 7.074468
+AOA  for Drone using sub-array profile: Azimuth = -117.827298 , Elevation = 7.074468
+AOA  for Drone data using profile product: Azimuth = -117.827298 , Elevation = 7.074468
+Error in AOA estimation- using RX circular trjaectory gps center: 112.592909 degree 
+Mean Error in AOA estimation: 63.992245 degree 
+Closest true AOA -176.867496 deg 
+Error in AOA estimation (using closest true AOA): 59.040198 degree 
+Profile Variance = 10489.121923
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_3/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_11:48:20.mat 
+ 
+
+--------------------------------------------------
+Flight 4 - Custom Tag
+--------------------------------------------------
+The Engineered whale (CETI-2) was moving (emulating the logging surface behavior of a whale).
+
+Sample 1 - Yes
+Mean Center coordinates : (15.227411,-61.421532) 
+Displacement of TX when AOA is being calculated 10.156770 meters 
+Groundtruth AOA w.r.t true north from center : -10.956320 degrees
+Distance between RX and TX = 253.811297 meters
+Mean Center coordinates : (1985.063403,929.940404) 
+Estimated array Radius: 4.795153 
+Reading VHF Data...Time to readfile = 0.007296 seconds
+AOA  for Drone using sub-array profile: Azimuth = -31.587744 , Elevation = 11.117021
+AOA  for Drone using sub-array profile: Azimuth = -31.587744 , Elevation = 11.117021
+AOA  for Drone data using profile product: Azimuth = -31.587744 , Elevation = 11.117021
+Error in AOA estimation- using RX circular trjaectory gps center: 20.631423 degree 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): -20.631423 degree 
+Mean Error in AOA estimation: 20.631777 degree 
+Closest true AOA -12.124846 deg 
+Error in AOA estimation (using closest true AOA): 19.462898 degree 
+Profile Variance = 0.000000
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_4/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_12:06:08.mat 
+
+Sample 2 - Invalid - taken durig drone landing.
+Mean Center coordinates : (15.227859,-61.421502) 
+Displacement of TX when AOA is being calculated 11.016423 meters 
+Groundtruth AOA w.r.t true north from center : -17.028530 degrees
+Distance between RX and TX = 264.797262 meters
+Mean Center coordinates : (1988.208734,980.384160) 
+Estimated array Radius: 2.537939 
+Reading VHF Data...Time to readfile = 0.010672 seconds
+AOA  for Drone using sub-array profile: Azimuth = 103.788301 , Elevation = 65.691489
+AOA  for Drone using sub-array profile: Azimuth = 96.768802 , Elevation = 34.361702
+AOA  for Drone data using profile product: Azimuth = 100.779944 , Elevation = 46.489362
+Error in AOA estimation- using RX circular trjaectory gps center: 117.808474 degree 
+Mean Error in AOA estimation: 117.817343 degree 
+Closest true AOA -14.918890 deg 
+Error in AOA estimation (using closest true AOA): 115.698834 degree 
+Profile Variance = 10764.771367
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_4/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_12:07:11.mat 
+
+
+--------------------------------------------------
+Flight 5 - Custom Tag
+--------------------------------------------------
+
+The Engineered whale (CETI-2) was moving (emulating the travelling surface behavior of a whale).
+
+Sample 1 - Yes
+Mean Center coordinates : (15.269533,-61.434703) 
+Displacement of TX when AOA is being calculated 48.966399 meters 
+Groundtruth AOA w.r.t true north from center : 12.850967 degrees
+Distance between RX and TX = 164.713000 meters
+Mean Center coordinates : (565.349148,5618.261619) 
+Estimated array Radius: 4.151068 
+Reading VHF Data...Time to readfile = 0.010092 seconds
+AOA  for Drone using sub-array profile: Azimuth = 1.504178 , Elevation = 15.159574
+AOA  for Drone using sub-array profile: Azimuth = 1.504178 , Elevation = 15.159574
+AOA  for Drone data using profile product: Azimuth = 1.504178 , Elevation = 15.159574
+Error in AOA estimation- using RX circular trjaectory gps center: 11.346789 degree 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): -11.346789 degree 
+Mean Error in AOA estimation: 9.567656 degree 
+Closest true AOA 9.358220 deg 
+Error in AOA estimation (using closest true AOA): 7.854041 degree 
+Profile Variance = 0.000000
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_5/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_12:38:47.mat 
+
+Sample 2 - invalid - taken during drone landing.
+Mean Center coordinates : (15.269759,-61.434663) 
+Displacement of TX when AOA is being calculated 41.342684 meters 
+Groundtruth AOA w.r.t true north from center : 35.253679 degrees
+Distance between RX and TX = 162.454959 meters
+Mean Center coordinates : (420.285321,5730.781883) 
+Estimated array Radius: 191.508602 
+Reading VHF Data...Time to readfile = 0.010463 seconds
+AOA  for Drone using sub-array profile: Azimuth = -29.582173 , Elevation = 43.457447
+AOA  for Drone using sub-array profile: Azimuth = -29.582173 , Elevation = 44.468085
+AOA  for Drone data using profile product: Azimuth = -29.582173 , Elevation = 43.457447
+Error in AOA estimation- using RX circular trjaectory gps center: 64.835852 degree 
+Mean Error in AOA estimation: 68.687164 degree 
+Closest true AOA 35.253679 deg 
+Error in AOA estimation (using closest true AOA): 64.835852 degree 
+Profile Variance = 11443.891194
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_5/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_12:39:50.mat 
+
+ 
+--------------------------------------------------
+Flight 6 - Custom Tag
+--------------------------------------------------
+The Engineered whale (CETI-2) was moving (emulating the travelling surface behavior of a whale).
+
+Sample 1 - Yes
+Mean Center coordinates : (15.292894,-61.440916) 
+Displacement of TX when AOA is being calculated 48.495798 meters 
+Groundtruth AOA w.r.t true north from center : 38.819809 degrees
+Distance between RX and TX = 239.974112 meters
+Mean Center coordinates : (49.859529,133.820284) 
+Estimated array Radius: 3.941855 
+Reading VHF Data...Time to readfile = 0.009078 seconds
+AOA  for Drone using sub-array profile: Azimuth = 43.621170 , Elevation = 17.180851
+AOA  for Drone using sub-array profile: Azimuth = 43.621170 , Elevation = 17.180851
+AOA  for Drone data using profile product: Azimuth = 43.621170 , Elevation = 17.180851
+Error in AOA estimation- using RX circular trjaectory gps center: 4.801361 degree 
+Error in AOA estimation- using RX circular trjaectory gps center (no abs): 4.801361 degree 
+Mean Error in AOA estimation: 4.814493 degree 
+Closest true AOA 40.035229 deg 
+Error in AOA estimation (using closest true AOA): 3.585941 degree 
+Profile Variance = 0.000000
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_6/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_13:26:34.mat 
+
+Sample 2 - Invalid - taken during drone landing
+Mean Center coordinates : (15.292918,-61.440703) 
+Displacement of TX when AOA is being calculated 51.206814 meters 
+Groundtruth AOA w.r.t true north from center : 58.239793 degrees
+Distance between RX and TX = 278.931087 meters
+Mean Center coordinates : (-208.563253,899.276176) 
+Estimated array Radius: 805.854278 
+Reading VHF Data...Time to readfile = 0.012452 seconds
+AOA  for Drone using sub-array profile: Azimuth = -180.000000 , Elevation = 0.000000
+AOA  for Drone using sub-array profile: Azimuth = -180.000000 , Elevation = 0.000000
+AOA  for Drone data using profile product: Azimuth = -180.000000 , Elevation = 0.000000
+Error in AOA estimation- using RX circular trjaectory gps center: 121.760207 degree 
+Mean Error in AOA estimation: 122.823572 degree 
+Closest true AOA 58.931160 deg 
+Error in AOA estimation (using closest true AOA): 121.068840 degree 
+Profile Variance = 10768.408237
+2.5D_new_formulation_experiments/Sci-robotics-Benchmark4-11-22-2023-Dominica/Flight_6/iq_realtime_subsampled_data/vhf_drone_payload_data_22-Nov-2023_13:27:36.mat 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

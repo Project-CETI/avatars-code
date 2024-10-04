@@ -1,0 +1,12 @@
+<launch>
+
+  <arg name="vrpn_topic" default="/mavros/local_position/pose" />
+
+  <node pkg="ceti_sar" type="get_antenna_orientation_vrpn_posestamped" respawn="false" name="get_antenna_orientation_vrpn_posestamped_node" output="screen">
+    <param name="tracking_duration" value="35" />
+    <param name="vrpn_topic" value="$(arg vrpn_topic)" />
+  </node>
+
+
+
+</launch>
