@@ -23,15 +23,12 @@ class Belief_State:
     w_y: np.ndarray
     w_theta : np.ndarray
     w_v : np.ndarray
-    #w_nextup : np.ndarray
     assigned_whales : np.ndarray
-    # w_nextup_phase : np.ndarray
-    # whale_up_deprecated : np.ndarray
     whale_up2 : np.ndarray
     w_Pcov: np.ndarray
 
-    w_last_surface_start_time: np.ndarray #It might be hard to quantify
-    w_last_surface_end_time: np.ndarray #It might be hard to quantify
+    w_last_surface_start_time: np.ndarray 
+    w_last_surface_end_time: np.ndarray 
     
     def __init__(self, knowledge: Global_knowledge, state_str:str = None, time: int = 0, number_of_boats: int = 1, b_x: np.ndarray = None, b_y: np.ndarray = None, b_theta: np.ndarray = None, b_v: np.ndarray = None, \
         number_of_whales: int = 2, w_x: np.ndarray = None, w_y: np.ndarray = None, w_theta: np.ndarray = None, w_v: np.ndarray = None, assigned_whales: t.List = [], \
@@ -62,8 +59,6 @@ class Belief_State:
                     self.w_last_surface_end_time[wid] < self.w_last_surface_start_time[wid]) \
                         else False for wid in range(self.number_of_whales)])
 
-            # print('Initialzed last_surface_start_time:', self.w_last_surface_start_time)
-            # print('Initialzed last_surface_end_time:', self.w_last_surface_end_time)
             
         else:
             self.add_to_state_from_str(state_str, debug)
@@ -72,14 +67,12 @@ class Belief_State:
         
 
     def state_copy(self, bid: int, wid: int):
-        # print(wid, isinstance(wid, list))
         if not isinstance(wid, list):
             return Belief_State(knowledge = self.knowledge, state_str = None, time = self.time, number_of_boats = 1, \
                 b_x = np.array([self.b_x[bid]]), b_y = np.array([self.b_y[bid]]), \
                     b_theta = np.array([self.b_theta[bid]]), b_v = np.array([self.b_v[bid]]), \
                         number_of_whales = 1, w_x = np.array([self.w_x[wid]]), w_y = np.array([self.w_y[wid]]), \
                             w_theta = np.array([self.w_theta[wid]]), w_v = np.array([self.w_v[wid]]), \
-                                # w_nextup_phase = np.array([self.w_nextup_phase[wid]]), \
                                     assigned_whales = [], \
                                         w_last_surface_start_time = np.array([self.w_last_surface_start_time[wid]]), \
                                             w_last_surface_end_time = np.array([self.w_last_surface_end_time[wid]]))
@@ -124,19 +117,12 @@ class Belief_State:
 
 
 
-    def next_state(self, control: Boat_Control, observations_x_y_v_theta_up = None, ground_truth_for_evaluation = None, Pcov = None, b_xys = None, w_assigned = None):#, surface_start_event_happened = None, surface_end_event_happened = None):
+    def next_state(self, control: Boat_Control, observations_x_y_v_theta_up = None, ground_truth_for_evaluation = None, Pcov = None, b_xys = None, w_assigned = None):
         time_delta = 1
         self.Pcov = Pcov
         
         self.time += time_delta
         
-        # if self.knowledge.use_GPS_coordinate_from_dataset:
-        #     next_long_lat = [self.knowledge.get_gps_from_start_vel_bearing(self.b_x[bid], self.b_y[bid], \
-        #         self.b_v[bid], self.b_theta[bid]) for bid in range(self.number_of_boats)]
-        #     for bid in range(self.number_of_boats):
-        #         self.b_x[bid] = next_long_lat[bid][0]
-        #         self.b_y[bid] = next_long_lat[bid][1]
-        # else:
         if b_xys is None:
             self.b_x += time_delta * control.b_v * np.cos(control.b_theta).reshape(self.b_x.shape)
             self.b_y += time_delta * control.b_v * np.sin(control.b_theta).reshape(self.b_y.shape)
@@ -150,13 +136,6 @@ class Belief_State:
 
         if observations_x_y_v_theta_up is None:
 
-            # if self.knowledge.use_GPS_coordinate_from_dataset:
-            #     next_long_lat = [self.knowledge.get_gps_from_start_vel_bearing(self.w_x[wid], self.w_y[wid], \
-            #         self.w_v[wid], self.w_theta[wid]) for wid in range(self.number_of_whales)]
-            #     for wid in range(self.number_of_whales):
-            #         self.w_x[wid] = next_long_lat[wid][0]
-            #         self.w_y[wid] = next_long_lat[wid][1]
-            # else:
             self.w_x += time_delta * self.w_v * np.cos(self.w_theta).reshape(self.w_x.shape)
             self.w_y += time_delta * self.w_v * np.sin(self.w_theta).reshape(self.w_y.shape)
 
@@ -169,15 +148,13 @@ class Belief_State:
 
         
         for wid in range(self.number_of_whales):
-            if self.whale_up2[wid] == False and observations_x_y_v_theta_up[wid, 4] == True: #surface_start_event_happened[wid]:
+            if self.whale_up2[wid] == False and observations_x_y_v_theta_up[wid, 4] == True:
                 self.whale_up2[wid] = True
-                self.w_last_surface_start_time[wid] = self.time #- 1
-                # print('whale: ', wid , ' changed last_surface_start_time:', self.w_last_surface_start_time[wid])
-            elif self.whale_up2[wid] == True and observations_x_y_v_theta_up[wid, 4] == False: #surface_end_event_happened[wid]:
+                self.w_last_surface_start_time[wid] = self.time
+            elif self.whale_up2[wid] == True and observations_x_y_v_theta_up[wid, 4] == False:
                 self.whale_up2[wid] = False
                 self.w_last_surface_end_time[wid] = self.time - 1
-                # print('whale: ', wid , ' changed last_surface_end_time:', self.w_last_surface_end_time[wid])
-    
+                
         self.agent_loc_aoa = {}
         for wid in range(self.number_of_whales):
             if wid in self.assigned_whales:
@@ -209,16 +186,7 @@ class Belief_State:
 
     def stage_cost(self):
         return 0
-        if self.number_of_boats == 1:
-            # return np.sum([self.knowledge.weight_whale_up * self.whale_up[wid] * (np.sqrt((self.b_x[0] - self.w_x[wid])**2 + (self.b_y[0] - self.w_y[wid])**2)) \
-            #     + self.knowledge.weight_whale_down * (1 - self.whale_up[wid]) * (np.sqrt((self.b_x[0] - self.w_x[wid])**2 + (self.b_y[0] - self.w_y[wid])**2))
-            #     for wid in range(self.number_of_whales) if wid not in self.assigned_whales]) 
-            return np.sum([self.knowledge.weight_whale_up * self.whale_up2[wid] * (np.sqrt((self.b_x[0] - self.w_x[wid])**2 + (self.b_y[0] - self.w_y[wid])**2)) \
-                + self.knowledge.weight_whale_down * (1 - self.whale_up2[wid]) * (np.sqrt((self.b_x[0] - self.w_x[wid])**2 + (self.b_y[0] - self.w_y[wid])**2))
-                for wid in range(self.number_of_whales) if wid not in self.assigned_whales]) 
-        else:
-            return 1000
-
+        
     def terminal_cost(self):
         return self.stage_cost()
 
@@ -241,11 +209,11 @@ class Belief_State:
             p = self.b_x[bid]
             q = self.history['boats'][bid]['x']
             if isinstance(p, list):
-                self.history['boats'][bid]['x'].extend(self.b_x[bid]) # extend?
-                self.history['boats'][bid]['y'].extend(self.b_y[bid]) # extend?
+                self.history['boats'][bid]['x'].extend(self.b_x[bid]) 
+                self.history['boats'][bid]['y'].extend(self.b_y[bid]) 
             else:
-                self.history['boats'][bid]['x'].append(self.b_x[bid]) # extend?
-                self.history['boats'][bid]['y'].append(self.b_y[bid]) # extend?
+                self.history['boats'][bid]['x'].append(self.b_x[bid]) 
+                self.history['boats'][bid]['y'].append(self.b_y[bid]) 
             min_x = min(min_x, min(self.history['boats'][bid]['x']))
             min_y = min(min_y, min(self.history['boats'][bid]['y']))
             max_x = max(max_x, max(self.history['boats'][bid]['x']))
@@ -253,15 +221,15 @@ class Belief_State:
 
         for wid in range(self.number_of_whales):
             if isinstance(self.w_x[wid], list):
-                self.history['whales'][wid]['x'].extend(self.w_x[wid]) # extend?
-                self.history['whales'][wid]['y'].extend(self.w_y[wid]) # extend?
+                self.history['whales'][wid]['x'].extend(self.w_x[wid]) 
+                self.history['whales'][wid]['y'].extend(self.w_y[wid]) 
                 if wid in self.assigned_whales:
                     self.history['whales'][wid]['up'].append(2)
                 else:
                     self.history['whales'][wid]['up'].extend(self.whale_up2[wid])
             else:
-                self.history['whales'][wid]['x'].append(self.w_x[wid]) # extend?
-                self.history['whales'][wid]['y'].append(self.w_y[wid]) # extend?
+                self.history['whales'][wid]['x'].append(self.w_x[wid]) 
+                self.history['whales'][wid]['y'].append(self.w_y[wid]) 
                 if wid in self.assigned_whales:
                     self.history['whales'][wid]['up'].append(2)
                 else:
@@ -287,23 +255,12 @@ class Belief_State:
             w_sizes[wid] = np.array([8 if up == 1 else 2 if up ==0 else 5 for up in self.history['whales'][wid]['up']])
 
             plt.scatter(self.history['whales'][wid]['x'], self.history['whales'][wid]['y'], c = cols[wid], s = w_sizes[wid])
-            #mpl.rcParams['lines.markersize']*2)
         
         for wid in range(self.number_of_whales):
             plt.scatter(self.w_x[wid], self.w_y[wid], label = 'Whale', c = np.array([cols[wid][-1]]))
             plt.text(self.w_x[wid], self.w_y[wid], 'w'+str(wid), fontsize=12)
         
-        # plt.scatter(self.w_x, self.w_y, c = 'g', label = 'Whale')
-        #plt.legend()
-        # plt.grid()
-        # plt.xlim(self.knowledge.boundary_x)
-        # plt.ylim(self.knowledge.boundary_y)
         
-        
-        # if self.knowledge.use_GPS_coordinate_from_dataset:
-        #     plt.xlim(min_x, max_x)
-        #     plt.ylim(min_y, max_y)
-        # else:
         plt.xlim(min_x - 500, max_x + 500)
         plt.ylim(min_y - 500, max_y + 500)
         
@@ -318,7 +275,7 @@ class Belief_State:
         state_str = ""
         if first_line:
             state_str += "time;number_of_boats;b_x;b_y;b_theta;b_v;number_of_whales;w_x;w_y;w_theta;w_v;assigned_whales\n"
-            # state_str += ';'.join(['|'.join([str(s) + ',' + str(e) for (s,e) in self.surface_interval_scenarios[wid]]) for wid in range(self.number_of_whales)])
+            
         state_str += str(self.time) + ";" + \
             str(self.number_of_boats) + ";" + ','.join([str(ai) for ai in self.b_x]) + ";" + ','.join([str(ai) for ai in self.b_y]) + ";" + ','.join([str(ai) for ai in self.b_theta]) + ";" + ','.join([str(ai) for ai in self.b_v]) \
                 + ";" + str(self.number_of_whales) + ";" + ','.join([str(ai) for ai in self.w_x]) + ";" + ','.join([str(ai) for ai in self.w_y]) + ";" + ','.join([str(ai) for ai in self.w_theta]) + ";" + ','.join([str(ai) for ai in self.w_v]) \
@@ -343,26 +300,20 @@ class Policy_base:
         t = model.set_variable(var_type='_x', var_name='t', shape=(1, 1))
         b_x = model.set_variable(var_type='_x', var_name='b_x', shape=(1,1))
         b_y = model.set_variable(var_type='_x', var_name='b_y', shape=(1,1))
-        # b_v = model.set_variable(var_type='_x', var_name='b_v', shape=(1,1))
         b_theta = model.set_variable(var_type='_x', var_name='b_theta', shape=(1,1))
         w_x = model.set_variable(var_type='_x', var_name='w_x', shape=(1, 1))
         w_y = model.set_variable(var_type='_x', var_name='w_y', shape=(1, 1))
         u_b_theta = model.set_variable(var_type='_u', var_name='u_b_theta')
         u_b_v = model.set_variable(var_type='_u', var_name='u_b_v')
       
-        # w_theta = state.w_theta
-        # w_v = state.w_v
-        # model.set_rhs('t', vertcat(t + dt_sec))
-        # model.set_rhs('b_x', b_x + t * (u_b_v ) * np.cos(u_b_theta+b_theta))
-        # model.set_rhs('b_y', b_y + t * (u_b_v) * np.sin(u_b_theta+b_theta))
+        
         model.set_rhs('t', vertcat(dt_sec))
         model.set_rhs('b_x', b_x + dt_sec * (u_b_v) * np.cos(u_b_theta))
         model.set_rhs('b_y', b_y + dt_sec * (u_b_v) * np.sin(u_b_theta))
         model.set_rhs('b_theta', u_b_theta)
         model.set_rhs('w_x', w_x)
         model.set_rhs('w_y', w_y)
-        # model.set_rhs('w_x', w_x + vertcat(w_v * np.cos(w_theta)))
-        # model.set_rhs('w_y', w_y + vertcat(w_v[0] * np.sin(w_theta[0])))
+        
     
         model.setup()
 
@@ -383,8 +334,7 @@ class Policy_base:
         self.mpc.set_rterm(u_b_theta = theta_penalty, u_b_v = v_penalty)
 
 
-        # self.mpc.bounds['lower','_u', 'u_b_theta'] = - 2 * np.pi
-        # self.mpc.bounds['upper','_u', 'u_b_theta'] = 2 * np.pi
+        
         self.mpc.bounds['lower','_u', 'u_b_v'] = 0
         self.mpc.bounds['upper','_u', 'u_b_v'] = knowledge.boat_max_speed_mtpm * dt_sec / 60
 
@@ -399,7 +349,7 @@ class Policy_base:
         
         if state.time % state.knowledge.observations_per_minute == 0:
      
-            self.us[bid] = [] # for bid in range(state.number_of_boats)}
+            self.us[bid] = []
 
             x0 = np.array([state.time, state.b_x[bid], state.b_y[bid], state.b_theta[bid], state.w_x[wid], state.w_y[wid]])
             x0 = x0.reshape(-1,1)

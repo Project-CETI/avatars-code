@@ -77,15 +77,13 @@ class Global_knowledge:
 
             if self.experiment_type == 'Combined_Dominica_Data':
                 self.observations_per_minute = 60
-                self.parsed_whale_data_output = 'Engg_whale_postprocessed_trace/' #'data_from_experiment_Nov23/'
+                self.parsed_whale_data_output = 'Engg_whale_postprocessed_trace/' 
             elif self.experiment_type == 'Feb24_Dominica_Data':
                 self.observations_per_minute = 60
                 self.parsed_whale_data_output = 'Feb24_Dominica_Data/'
             else:   
                 self.observations_per_minute = 60
-                # if self.experiment_type == 'Benchmark_Shane_Data':
-                self.parsed_whale_data_output = 'dswp_parsed_data_moving_sensors/' # Convert to XY val before storing
-                
+                self.parsed_whale_data_output = 'dswp_parsed_data_moving_sensors/'
 
             if self.observation_type == 'Acoustic_AOA_no_VHF':
                 self.acoustic_obs_type = 'AOA'
@@ -104,23 +102,14 @@ class Global_knowledge:
         return self.base_output_path + 'Run_' + str(run_id) + '/'
         
     def get_system_gt_txyz_fnPrefix_path(self, run_id):
-        # if self.experiment_type in ['Combined_Dominica_Data', 'Feb24_Dominica_Data']:
-        #     path = self.base_output_path
-        # else:
         path = self.base_output_path + 'Run_'+ str(run_id) + '/'
         return path + 'System_gt_txyz_', path
 
     def get_rawObservation_filterInput_fnPrefix_path(self, run_id):
-        # if self.experiment_type in ['Combined_Dominica_Data', 'Feb24_Dominica_Data']:
-        #     path = self.base_output_path + self.observation_type + '/'
-        # else:
         path = self.base_output_path + 'Run_'+ str(run_id) + '/' + self.observation_type + '/'
         return path + 'RawObservation_filterInput_', path
 
     def get_stateEstimation_filterOutput_txyz_fnPrefix_path(self, run_id):
-        # if self.experiment_type in ['Combined_Dominica_Data', 'Feb24_Dominica_Data']:
-        #     path = self.base_output_path + self.observation_type + '/'
-        # else:
         path = self.base_output_path + 'Run_'+ str(run_id) + '/' + self.observation_type + '/'
         return path + 'StateEstimation_filterOutput_txyz_', path
 

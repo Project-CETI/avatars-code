@@ -58,7 +58,6 @@ def save_run_id_details(config_obj, number_of_whales, max_num_agents, date_combi
         size = (config_obj["average_num_runs"], config_obj["number_of_whales"]))
 
     for run_id in range(config_obj["average_num_runs"]):
-        # suffix = '_w' + str(number_of_whales)
         suffix = '_'.join(date_combi)
         val_dict_foldername = rebuttal_output_path + 'intial_conditions' + suffix + '/Run_' + str(run_id)
         if not os.path.exists(val_dict_foldername):
@@ -108,15 +107,12 @@ if __name__ == '__main__':
 
     for num_agent in num_agents:
         for num_whale in num_whales:
-            # if num_whale <= num_agent:
-            #     continue
+
             if [num_agent, num_whale] not in nagent_nwhales_combo:
                 continue
             for date_combi in combinations_of_dates[num_whale]:
                 for tagging_radius in tagging_radii:
 
-                    # if num_whale == 4 and num_agent != 2:
-                    #     continue
 
                     config_obj_copy = copy.deepcopy(config_obj)
                     config_obj_copy["number_of_agents"] = num_agent

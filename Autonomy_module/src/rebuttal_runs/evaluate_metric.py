@@ -111,11 +111,9 @@ if __name__ == '__main__':
 
     
     if expedition == 'Nov23':
-        # num_agents = [2, 3]
         num_agents = [2,3]
         num_whales = [4,5]
         nagent_nwhales_combo = [[2,4], [2,5], [3,5]]
-        # num_whales = [4, 5, 6]
         tagging_radii = [200, 300, 500]
         metric_output = 'output_Engineered_whale/' 
         output_base = metric_output + 'Combined_Dominica_Data'
@@ -201,7 +199,11 @@ if __name__ == '__main__':
     
     string_for_nice_print = ''
         
-    metric_name_str = 'observation_type,num_agents,num_whales,tagging_radius,' + \
+    if expedition == 'Benchmark':
+        metric_name_str = 'policy_name,'
+    else:
+        metric_name_str = ''
+    metric_name_str += 'observation_type,num_agents,num_whales,tagging_radius,' + \
         ','.join([m + '_mean,' + m +'_std' for m in ['successful_opportunity','mission_time']]) + ','+\
             'missing_1_or_more_whales_prob,' +  ','.join(['missed_'+str(w)+'whales_prob' for w in range(max(num_whales)+1)])
     print('\n'+metric_name_str)
@@ -222,7 +224,9 @@ if __name__ == '__main__':
                     line += ',' + str(1-ms[0])
                     line += ',' + ','.join([str(m) for m in ms])
                     print(line)
-                    string_for_nice_print += line + '\n'
+                    
+                    string_for_nice_print += (policy_name +',' if expedition == 'Benchmark' else '') \
+                        + line + '\n'
 
     run_filename = 'src/rebuttal_runs/'+expedition+'_runs.csv'
     with open(run_filename, 'w') as run_file:

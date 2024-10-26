@@ -35,9 +35,7 @@ def save_run_id_details(config_obj, number_of_whales, max_num_agents):
             data_min_x = min(data_min_x, min(gt_df['gt_lon'].values))
             data_max_y = max(data_max_y, max(gt_df['gt_lat'].values))
             data_max_x = max(data_max_x, max(gt_df['gt_lon'].values))
-            # plt.scatter(gt_df['gt_lon'], gt_df['gt_lat'], s = 10)
-
-            # first_surface_start_time = scenarios[first_surfacing_index][0]
+            
 
         b_xs_all = np.random.uniform(data_min_x, data_max_x, size = max_num_agents)
         b_ys_all = np.random.uniform(data_min_y, data_max_y, size = max_num_agents)
@@ -64,11 +62,10 @@ def save_run_id_details(config_obj, number_of_whales, max_num_agents):
         plt.close()
 
     
-    # first_whale_filename = [whalefile for whalefile in whalefiles if date_combi[0] in whalefile ][0]    
+       
 
         print('bxs:', b_xs_all, ', bys:',b_ys_all)
-        # print('\n')
-
+    
     
 
 
@@ -82,7 +79,7 @@ if __name__ == '__main__':
 
     policy_names = ['MA_rollout','BLE', 'VRP_TW_no_replan_CE']
 
-    # max_num_agents = max(num_agents)
+    
     
 
     if not os.path.exists(base_dir + 'rebuttal_runs/'):
@@ -91,7 +88,7 @@ if __name__ == '__main__':
     
     rebuttal_output_path = 'output_ablation_dswp/'
     print(rebuttal_output_path)
-    # exit()
+    
     
     if not os.path.exists(rebuttal_output_path):
         os.makedirs(rebuttal_output_path)
@@ -102,7 +99,7 @@ if __name__ == '__main__':
 
         batch_run_script = open(base_dir + 'rebuttal_runs/DSWP_batch_run_script_'+policy_name+'.sh', 'w')
 
-        # combinations_of_dates = {num_whale: list(combinations(all_possible_dates, num_whale)) for num_whale in num_whales}
+        
 
         observation_types = ['Acoustic_AOA_no_VHF', 'Acoustic_AOA_VHF_AOA', 'Acoustic_xy_no_VHF','Acoustic_xy_VHF_xy']
 
@@ -113,7 +110,7 @@ if __name__ == '__main__':
                 config_obj_copy["number_of_whales"] = num_whales
                 config_obj_copy["tagging_distance"] = tagging_radius
                 config_obj_copy["observation_type"] = observation_type
-                # config_obj_copy["dates"] = [d for d in date_combi]
+                
 
                 suffix = '_r' + str(tagging_radius) + '_'+ observation_type + '_w' + str(num_whales) + '_a' + str(num_agents)
                 output_config_filename = base_dir + 'rebuttal_runs/config_DSWP' + suffix + '.json'

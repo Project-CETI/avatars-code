@@ -28,11 +28,11 @@ class System_state:
         self.number_of_whales = parameters.number_of_whales
         self.run_id = run_id
         
-        self.whales_allt_loc = {} # Fixed at the begining on set for DSWP dataset
-        self.whales_allt_up = {} # Fixed at the begining for DSWP dataset
+        self.whales_allt_loc = {} 
+        self.whales_allt_up = {} 
         
-        self.initial_agent_xs: np.ndarray = None # for comparison
-        self.initial_agent_ys: np.ndarray = None # for comparison
+        self.initial_agent_xs: np.ndarray = None 
+        self.initial_agent_ys: np.ndarray = None 
         
         self.current_whale_xs = {} 
         self.current_whale_ys = {} 
@@ -51,7 +51,7 @@ class System_state:
         self.vhf_sensors_allt_loc: t.Dict[int, t.Dict[int, t.Tuple[float, float]]] = {} # {time: {sensor_id: (loc_x, loc_y)}}
         # self.receiver_allw_allt_loc: t.Dict[int, t.Dict[int, t.Tuple[float, float]]] = {} # {wid: {time: {sensor_id: (loc_x, loc_y) } } }
         self.receiver_allw_allt_loc: t.Dict[int, t.Dict[int, t.Dict[str, AOA_Sensor_Obs]]] = {} # {wid: {time: {sensor_id: AOA_Sensor_Obs } } }
-        # self.true_allt_AOA: t.Dict[int, t.Dict[int, float]] = {} # {wid: {time: {sensor_id: AOA}}}
+        
         
         if copy_constructor:
             return
@@ -67,11 +67,11 @@ class System_state:
         obj.gt_surface_interval_scenario = {0: self.gt_surface_interval_scenario[wid]} 
         obj.number_of_whales = 1
         
-        obj.whales_allt_loc = {0: self.whales_allt_loc[wid]} # Fixed at the begining on set for DSWP dataset
-        obj.whales_allt_up = {0: self.whales_allt_up[wid]} # Fixed at the begining for DSWP dataset
+        obj.whales_allt_loc = {0: self.whales_allt_loc[wid]} 
+        obj.whales_allt_up = {0: self.whales_allt_up[wid]}
         
-        obj.initial_agent_xs = self.initial_agent_xs # for comparison
-        obj.initial_agent_ys = self.initial_agent_ys # for comparison
+        obj.initial_agent_xs = self.initial_agent_xs 
+        obj.initial_agent_ys = self.initial_agent_ys 
         
         obj.current_whale_xs = {0: self.current_whale_xs[wid]} 
         obj.current_whale_ys = {0: self.current_whale_ys[wid]} 
@@ -99,7 +99,7 @@ class System_state:
         obj.ta_observation = {0: self.ta_observation[wid]}
         obj.gt_whale_sighting = {0: self.gt_whale_sighting[wid]}
         obj.visible_xy = {0: self.visible_xy[wid]}
-        # obj.true_allt_AOA = {0: self.true_allt_AOA[wid]}
+        
 
         obj.file_names = [wid]
 
@@ -160,13 +160,13 @@ class System_state:
         for wid in range(self.number_of_whales):
             surface_intervals_df = pd.read_csv(self.parameters.parsed_whale_data_output + dates[wid] + 'surface_interval.csv', \
                 names=['surface_start', 'surface_stop', 'fluke_camera_aoa'], header=None)
-            surface_intervals_df['surface_start'] = surface_intervals_df['surface_start'] #- min_sec_in_gt
-            surface_intervals_df['surface_stop'] = surface_intervals_df['surface_stop'] #- min_sec_in_gt
+            surface_intervals_df['surface_start'] = surface_intervals_df['surface_start']
+            surface_intervals_df['surface_stop'] = surface_intervals_df['surface_stop'] 
             surface_intervals_df = surface_intervals_df.sort_values(by=['surface_start'])
 
             for _, surface_durations_row in surface_intervals_df.iterrows():
-                ss = int(surface_durations_row['surface_start']) #+ random_start_time_index[wid]
-                se = int(surface_durations_row['surface_stop']) #+ random_start_time_index[wid]
+                ss = int(surface_durations_row['surface_start']) 
+                se = int(surface_durations_row['surface_stop']) 
                 self.gt_surface_interval_scenario[wid].append((ss, se))
 
         if not isfile(val_dict_filename):
@@ -186,9 +186,9 @@ class System_state:
                 se_old = None
                 for (ss, se) in self.gt_surface_interval_scenario[wid]:
                     if ss is not None and se is not None:
-                        surface_time_samples.append((se - ss)) # / self.parameters.observations_per_minute)
+                        surface_time_samples.append((se - ss))
                     if se_old is not None and ss is not None:
-                        bottom_time_samples.append((ss - 1 - se_old)) # / self.parameters.observations_per_minute)
+                        bottom_time_samples.append((ss - 1 - se_old)) 
                     se_old = se
             self.parameters.surface_time_mean = int(np.mean(surface_time_samples))
             self.parameters.surface_time_var = int(np.std(surface_time_samples))
@@ -211,7 +211,6 @@ class System_state:
 
         
 
-        # suffix = '_w' + str(self.parameters.number_of_whales)
        
         self.gt_whale_sighting = {wid: {} for wid in range(self.number_of_whales)}
 
@@ -245,8 +244,6 @@ class System_state:
             if self.parameters.experiment_type == 'Benchmark_Shane_Data' and self.parameters.observation_type in ['Acoustic_xy_no_VHF', 'Acoustic_xy_VHF_xy']:
                 sensor_xy_df = pd.read_csv(self.parameters.parsed_whale_data_output + dates[wid] +'xy.csv', \
                     names=['sensor_sec', 'w_long', 'w_lat', 'long_std', 'lat_std', 'sensor_name'], header=None)
-                # print(sensor_xy_df['w_lat'])
-                # print(sensor_xy_df['w_long'])
                 sensor_xy_df = sensor_xy_df.sort_values(by=['sensor_sec'])
                 if self.parameters.observation_type == 'Acoustic_xy_no_VHF':
                     sensor_xy_df = sensor_xy_df[sensor_xy_df['sensor_name'] == 'U']
@@ -326,7 +323,7 @@ class System_state:
                             
 
                 if init_loc_w is None:
-                    init_time = int(gt_row['gt_sec']) #+ random_start_time_index[wid]
+                    init_time = int(gt_row['gt_sec']) 
 
                     next_loc = get_gps_from_start_vel_bearing(gt_row['gt_lon'], gt_row['gt_lat'], Whale_speed_mtpm / (5*60), fluke_dir * np.pi / 180)
 
@@ -335,13 +332,11 @@ class System_state:
             def check_interval(value, intervals):
                 return any([1 if min_val <= value <= max_val else 0 for (min_val, max_val) in intervals])
             if self.parameters.experiment_type == 'Benchmark_Shane_Data' and self.parameters.observation_type in ['Acoustic_xy_no_VHF', 'Acoustic_xy_VHF_xy']:
-                # print(len(sensor_xy_df))
                 
                 current_whale_up_col = sensor_xy_df['sensor_sec'].apply(check_interval, intervals=self.gt_surface_interval_scenario[wid])
                 acoustic_silent_start_ind = sensor_xy_df.apply(lambda row: row['sensor_sec'] in acoustic_stop_start_df['acoustic_silent_start'].values, axis=1)
                 acoustic_silent_end_ind = sensor_xy_df.apply(lambda row: row['sensor_sec'] in acoustic_stop_start_df['acoustic_silent_end'].values, axis=1)
                 self.extra_obs[wid] = dict(zip(sensor_xy_df['sensor_sec'], zip(current_whale_up_col, acoustic_silent_start_ind, acoustic_silent_end_ind)))
-                # print([k for k,v in self.extra_obs[wid].items() if v[0]==0])
                 self.loc_observation[wid] = dict(zip(sensor_xy_df['sensor_sec'], \
                     zip(sensor_xy_df['w_long'], sensor_xy_df['w_lat'], sensor_xy_df['long_std'], sensor_xy_df['lat_std'])))
                 
@@ -352,30 +347,13 @@ class System_state:
                 acoustic_silent_start_ind = sensor_df.apply(lambda row: row['sensor_sec'] in acoustic_stop_start_df['acoustic_silent_start'].values, axis=1)
                 acoustic_silent_end_ind = sensor_df.apply(lambda row: row['sensor_sec'] in acoustic_stop_start_df['acoustic_silent_end'].values, axis=1)
                 self.extra_obs[wid] = dict(zip(sensor_df['sensor_sec'], zip(current_whale_up_col, acoustic_silent_start_ind, acoustic_silent_end_ind)))
-                # print([k for k,v in self.extra_obs[wid].items() if v[0]==0])
                 self.ta_observation[wid] = dict(zip(sensor_df['sensor_sec'], \
                         zip(sensor_df['sensor_lon'], sensor_df['sensor_lat'], sensor_df['aoa'], sensor_df['aoa1'], sensor_df['aoa2'], sensor_df['std_error'])))
 
-                # for _, sensor_row in sensor_df.iterrows():
-                #     if sensor_row['aoa'] is None or np.isnan(sensor_row['aoa']):
-                #         continue
-                #     if sensor_row['std_error'] is None or np.isnan(sensor_row['std_error']):
-                #         sensor_row['std_error'] = self.parameters.Acoustic_AOA_obs_error_std_degree
-                #     obs_sec = int(sensor_row['sensor_sec']) #+ random_start_time_index[wid]
-                    
-                #     current_whale_up = any([ss_se[0] <= sensor_row['sensor_sec'] and sensor_row['sensor_sec'] <= ss_se[1] \
-                #         for ss_se in self.gt_surface_interval_scenario[wid]])
-                #     acoustic_silent_start_ind = any([row['acoustic_silent_start'] == sensor_row['sensor_sec'] for _, row in acoustic_stop_start_df.iterrows()])
-                #     acoustic_silent_end_ind = any([row['acoustic_silent_end'] == sensor_row['sensor_sec'] for _, row in acoustic_stop_start_df.iterrows()])
-                #     self.extra_obs[wid][obs_sec] \
-                #         = (current_whale_up, acoustic_silent_start_ind, acoustic_silent_end_ind)
-                #     self.ta_observation[wid][obs_sec] \
-                #         = (sensor_row['sensor_lon'], sensor_row['sensor_lat'],sensor_row['aoa'], sensor_row['aoa1'], sensor_row['aoa2'], sensor_row['std_error'])
 
             filter = Adaptive_UKF_ARCTAN(self.parameters)
             intitial_variance = np.diag([self.parameters.initial_obs_xy_error[0,0], self.parameters.initial_obs_xy_error[1,1], \
                 self.parameters.initial_obs_xy_error[0,0]/10, self.parameters.initial_obs_xy_error[1,1]/10])
-            # intitial_variance = np.diag([self.parameters.initial_obs_xy_error[0,0]] * 4)
             filter.initialize_filter(init_loc_w, intitial_variance)
 
             for prev_time in range(init_time, 1):
@@ -399,13 +377,11 @@ class System_state:
                     received_AOA_candidate1 = np.array([self.ta_observation[wid][prev_time][3]]) if prev_time in self.ta_observation[wid].keys() else None
                     received_AOA_candidate2 = np.array([self.ta_observation[wid][prev_time][4]]) if prev_time in self.ta_observation[wid].keys() else None
 
-                    # received_AOA = np.array([self.ta_observation[wid][prev_time][2]]) if prev_time in self.ta_observation[wid].keys() else None
                     obs = ObservationClass_whale_TA(current_whale_up=current_whale_up, current_receiver_error = receiver_error_var, \
                         receiver_current_loc = receiver_loc, \
                             current_observed_AOA_candidate1= received_AOA_candidate1, current_observed_AOA_candidate2=received_AOA_candidate2, \
                                 current_observed_xy = None)
                 
-                # prev_hat_x = np.copy(filter.hat_x_k)
                 if prev_time != 0:
                     extra_obs = (self.extra_obs[wid][prev_time][1], self.extra_obs[wid][prev_time][2]) \
                         if prev_time in self.extra_obs[wid].keys() else None
@@ -414,13 +390,6 @@ class System_state:
                 if any(np.isnan(filter.hat_x_k)):
                     print('here')
 
-            # if self.parameters.experiment_type == 'Benchmark_Shane_Data':
-            #     gt_row_this = gt_df.loc[gt_df['gt_sec'] == 0]
-            #     init_loc_w_2 = np.array([gt_row_this['gt_lon'].values[0], gt_row_this['gt_lat'].values[0]])  
-            #     filter = Adaptive_UKF_ARCTAN(self.parameters)
-            #     intitial_variance = np.diag([self.parameters.initial_obs_xy_error[0,0], self.parameters.initial_obs_xy_error[1,1], \
-            #     	self.parameters.initial_obs_xy_error[0,0]/10, self.parameters.initial_obs_xy_error[1,1]/10])
-            #     filter.initialize_filter(init_loc_w_2, intitial_variance)
 
             
             self.extra_info_from_experiment['initial_observation'][wid] = filter.hat_x_k.reshape(4)
@@ -431,9 +400,6 @@ class System_state:
             self.current_whale_ys[wid] = filter.hat_x_k[1, 0]
 
 
-            # self.receiver_allw_allt_loc[wid] = {0: {'ta_' + str(wid): AOA_Sensor_Obs(sx = receiver_loc[0, 0] if receiver_loc is not None else None, \
-            #     sy = receiver_loc[0, 1] if receiver_loc is not None else None, \
-            #         true_AOA = None, obs_AOA = received_AOA, AOA_error_std = receiver_error_std)}}
 
             if self.parameters.experiment_type != 'Benchmark_Shane_Data' or self.parameters.observation_type not in ['Acoustic_xy_no_VHF', 'Acoustic_xy_VHF_xy']:
                 self.receiver_allw_allt_loc[wid] = {0: {'ta_' + str(wid): AOA_Sensor_Obs_candidate(sx = receiver_loc[0, 0] if receiver_loc is not None else None, \
@@ -456,16 +422,7 @@ class System_state:
                 self.initial_agent_ys = np.array([np.random.uniform(self.data_min_y, self.data_max_y) for bid in range(self.parameters.number_of_agents)])
             
 
-        # suffix = '_w' + str(self.parameters.number_of_whales)
-        # suffix = '_'.join(self.parameters.dates)
-        # val_dict_filename = self.parameters.base_output_path_prefix + 'intial_conditions' + suffix + '/Run_' + str(self.run_id) + '/values.csv'
-        # if isfile(val_dict_filename):
-        #     with open(val_dict_filename, 'r') as val_dict_file:
-        #         val_dict = json.load(val_dict_file)
-        #         if "initial_agent_xs" in val_dict.keys() and self.parameters.number_of_agents <= len(val_dict["initial_agent_xs"]) and \
-        #             "initial_agent_ys" in val_dict.keys() and self.parameters.number_of_agents <= len(val_dict["initial_agent_ys"]):
-        #             self.initial_agent_xs = np.array(val_dict["initial_agent_xs"][:self.parameters.number_of_agents])
-        #             self.initial_agent_ys = np.array(val_dict["initial_agent_ys"][:self.parameters.number_of_agents])
+     
                 
         
         self.current_agent_xs = np.copy(self.initial_agent_xs)
@@ -473,53 +430,10 @@ class System_state:
 
         for wid in range(self.number_of_whales): 
             self.current_whale_assigned[wid] = False
-            # next_surface_end_time = [ se \
-            #     for (ss,se) in self.gt_surface_interval_scenario[wid] if self.time_in_second >= ss and self.time_in_second <= se]
-            # if self.current_whale_up[wid] and len(next_surface_end_time) > 0:
-            #     next_surface_end_time = next_surface_end_time[0]
             
-            # if self.parameters.overlay_GPS and wid != 0:
-            #     temp_whale_loc_x = self.current_whale_xs[wid] - self.data_min_x_wid[wid] + self.data_min_x_wid[0]
-            #     temp_whale_loc_y = self.current_whale_ys[wid] - self.data_min_y_wid[wid] + self.data_min_y_wid[0]
-            #     if self.parameters.speed_based_rendezvous == True:
-            #         self.current_whale_assigned[wid] = False
-            #         continue
-            #         if self.current_whale_up[wid]:
-            #             l = [get_distance_from_latLon_to_meter(self.current_agent_ys[bid], self.current_agent_xs[bid], \
-            #                 temp_whale_loc_y, temp_whale_loc_x) / self.parameters.boat_max_speed_mtpm \
-            #                     for bid in range(self.parameters.number_of_agents)]
-            #             # print(min(l), (next_surface_end_time - current_time)/60 - 5)
-            #             if min(l)<=(next_surface_end_time - self.time_in_second)/60 - 5:
-            #                 # print('Herre')
-            #                 self.current_whale_assigned[wid] = True
-            #     else:
-            #         self.current_whale_assigned[wid] = False
-            #         continue
-            #         self.current_whale_assigned[wid] = self.current_whale_up[wid] and \
-            #             any([get_distance_from_latLon_to_meter(self.current_agent_ys[bid], self.current_agent_xs[bid], \
-            #                 temp_whale_loc_y, temp_whale_loc_x) <= self.parameters.tagging_distance \
-            #                     for bid in range(self.parameters.number_of_agents)])
-            # else:
-            #     if self.parameters.speed_based_rendezvous == True:
-            #         self.current_whale_assigned[wid] = False
-            #         continue
-            #         if self.current_whale_up[wid]:
-            #             l = [get_distance_from_latLon_to_meter(self.current_agent_ys[bid], self.current_agent_xs[bid], \
-            #                 self.current_whale_ys[wid], self.current_whale_xs[wid]) / self.parameters.boat_max_speed_mtpm \
-            #                     for bid in range(self.parameters.number_of_agents)]
-            #             # print(min(l), (next_surface_end_time - current_time)/60 - 5)
-            #             if min(l) <= (next_surface_end_time - self.time_in_second)/60 - 5:
-            #                 self.current_whale_assigned[wid] = True
-            #     else:
-            #         self.current_whale_assigned[wid] = False
-            #         continue
-            #         self.current_whale_assigned[wid] = self.current_whale_up[wid] and \
-            #             any([get_distance_from_latLon_to_meter(self.current_agent_ys[bid], self.current_agent_xs[bid], \
-            #                 self.current_whale_xs[wid], self.current_whale_ys[wid]) <= self.parameters.tagging_distance \
-            #                     for bid in range(self.parameters.number_of_agents)])
 
             
-        # min_traj_len = min([ for wid in range(self.number_of_whales)])
+        
         if self.parameters.experiment_type != 'Benchmark_Shane_Data':
             self.parameters.n_horizon_for_state_estimation = int(max_traj_len)
             self.parameters.n_horizon_for_evaluation = self.parameters.n_horizon_for_state_estimation - self.parameters.down_time_mean
@@ -551,17 +465,9 @@ class System_state:
             else:
                 receiver_x = self.ta_observation[wid][current_time + 1][0] if current_time + 1 in self.ta_observation[wid].keys() else None
                 receiver_y = self.ta_observation[wid][current_time + 1][1] if current_time + 1 in self.ta_observation[wid].keys() else None
-                # received_AOA = self.ta_observation[wid][current_time + 1][2] if current_time + 1 in self.ta_observation[wid].keys() else None
                 received_AOA_candidate1 = self.ta_observation[wid][current_time + 1][3] if current_time + 1 in self.ta_observation[wid].keys() else None
                 received_AOA_candidate2 = self.ta_observation[wid][current_time + 1][4] if current_time + 1 in self.ta_observation[wid].keys() else None
                 receiver_error_std = self.ta_observation[wid][current_time + 1][5] if current_time + 1 in self.ta_observation[wid].keys() else None
-                # if receiver_x is not None and np.isnan(receiver_x):
-                #     receiver_error_std = None
-                #     received_AOA = None
-                #     receiver_x = None
-                #     receiver_y = None
-                # self.receiver_allw_allt_loc[wid][current_time + 1] = {'ta_' + str(wid) : AOA_Sensor_Obs(sx = receiver_x, sy = receiver_y, \
-                #     true_AOA = None, obs_AOA = received_AOA, AOA_error_std = receiver_error_std)}
                 self.receiver_allw_allt_loc[wid][current_time + 1] = {'ta_' + str(wid): AOA_Sensor_Obs_candidate(sx = receiver_x, sy = receiver_y, \
                         true_AOA = None, obs_AOA = None, \
                             obs_AOA_candidate1 = received_AOA_candidate1, obs_AOA_candidate2 = received_AOA_candidate2, \
@@ -609,28 +515,11 @@ class System_state:
                     if min(dist) <= self.parameters.visual_distance:
                         self.visible_xy[wid] = (temp_whale_loc_x, temp_whale_loc_y)
                     
-            # else:
             self.current_whale_assigned[wid] = self.current_whale_assigned[wid] or (self.current_whale_up[wid] and \
                 any([get_distance_from_latLon_to_meter(self.current_agent_ys[bid], self.current_agent_xs[bid], \
                     temp_whale_loc_y, temp_whale_loc_x) <= self.parameters.tagging_distance \
                         for bid in range(self.parameters.number_of_agents)]))
-            # else:
-            #     if self.parameters.speed_based_rendezvous == True:
-            #         if not self.current_whale_assigned[wid] and self.current_whale_up[wid]:
-            #             # l = [get_distance_from_latLon_to_meter(self.current_agent_ys[bid], self.current_agent_xs[bid], \
-            #             #     self.current_whale_ys[wid], self.current_whale_xs[wid]) / self.parameters.boat_max_speed_mtpm \
-            #             #         for bid in range(self.parameters.number_of_agents)]
-            #             # if min(l) <= (next_surface_end_time - current_time)/60 - 5:
-            #             #     self.current_whale_assigned[wid] = True
-            #             dist = [get_distance_from_latLon_to_meter(self.current_agent_ys[bid], self.current_agent_xs[bid], \
-            #                 self.current_whale_ys[wid], self.current_whale_xs[wid])\
-            #                     for bid in range(self.parameters.number_of_agents)]
-
-            #     else:
-            #         self.current_whale_assigned[wid] = self.current_whale_assigned[wid] or (self.current_whale_up[wid] and \
-            #             any([get_distance_from_latLon_to_meter(self.current_agent_ys[bid], self.current_agent_xs[bid], \
-            #                 self.current_whale_ys[wid], self.current_whale_xs[wid]) <= self.parameters.tagging_distance \
-            #                     for bid in range(self.parameters.number_of_agents)]))
+            
         self.time_in_second += 1
         
     

@@ -14,9 +14,6 @@ class State_Estimation_Filter:
 
         self.data_ukf = {wid: {'mean': [], 'std': [], 'whale_up': []} for wid in range(observation.number_of_whales)}
         
-        # if self.parameters.experiment_type == 'Combined_Dominica_Data': 
-        #     self.ukfs = {wid: Adaptive_UKF_GPS(self.parameters) for wid in range(observation.number_of_whales)}
-        # else:
         self.ukfs = {wid: Adaptive_UKF_ARCTAN(self.parameters) for wid in range(observation.number_of_whales)}
         
         for wid in range(observation.number_of_whales):
@@ -27,11 +24,6 @@ class State_Estimation_Filter:
             self.ukfs[wid].initialize_filter(observation.initial_observation[wid], intitial_variance)
             
             
-            # if self.parameters.experiment_type == 'Feb24_Dominica_Data':
-            #     self.ukfs[wid].state_estimation(observation.get_observation_t(wid), \
-            #         (observation.extra_obs[wid][1], observation.extra_obs[wid][2]))
-            # else:
-            #     self.ukfs[wid].state_estimation(observation.get_observation_t(wid))
             self.data_ukf[wid]['mean'].append(self.ukfs[wid].hat_x_k)
             self.data_ukf[wid]['std'].append(self.ukfs[wid].P_k)
             self.data_ukf[wid]['whale_up'].append(observation.current_whale_up[wid])
@@ -50,10 +42,6 @@ class State_Estimation_Filter:
         
         num_agents = observation.current_agent_xs.shape[0]
         Pcov = {wid: self.data_ukf[wid]['std'][-1] for wid in range(observation.number_of_whales)}
-
-        # signature = inspect.signature(Belief_State.__init__).parameters
-        # for name, parameter in signature.items():
-        #     print(name, parameter.default, parameter.annotation, parameter.kind)
 
         if self.parameters.experiment_type in ['Benchmark_Shane_Data','Combined_Dominica_Data', 'Feb24_Dominica_Data']:
             if self.parameters.overlay_GPS and self.parameters.experiment_type == 'Feb24_Dominica_Data':
@@ -105,40 +93,30 @@ class State_Estimation_Filter:
                 self.data_ukf[wid]['std'].append(self.ukfs[wid].P_k)
                 self.data_ukf[wid]['whale_up'].append(observation.current_whale_up[wid])
 
-            if 1==2 and self.parameters.experiment_type == 'Benchmark_Shane_Data':
-                observations_x_y_v_theta_up[wid, 0] = self.data_ukf[wid]['mean'][observation.current_time][0]
-                observations_x_y_v_theta_up[wid, 1] = self.data_ukf[wid]['mean'][observation.current_time][1]
-                observations_x_y_v_theta_up[wid, 2] = np.linalg.norm([self.data_ukf[wid]['mean'][observation.current_time][2], self.data_ukf[wid]['mean'][observation.current_time][3]])
-                observations_x_y_v_theta_up[wid, 3] = np.arctan2(self.data_ukf[wid]['mean'][observation.current_time][3], self.data_ukf[wid]['mean'][observation.current_time][2])
+            
+            if self.parameters.overlay_GPS and wid != 0 and self.parameters.experiment_type == 'Feb24_Dominica_Data':
+                temp_x = self.data_ukf[wid]['mean'][observation.current_time][0] \
+                    - (observation.data_min_x_wid[wid] + observation.data_max_x_wid[wid])/2 \
+                    + (observation.data_min_x_wid[0] + observation.data_max_x_wid[0])/2
+                temp_y = self.data_ukf[wid]['mean'][observation.current_time][1] - \
+                    (observation.data_min_y_wid[wid] + observation.data_max_y_wid[wid])/2 \
+                        + (observation.data_min_y_wid[0] + observation.data_max_y_wid[0])/2
+                w_xy = convert_longlat_to_xy_in_meters(temp_x, temp_y)
             else:
-                # try:
-                if self.parameters.overlay_GPS and wid != 0 and self.parameters.experiment_type == 'Feb24_Dominica_Data':
-                    temp_x = self.data_ukf[wid]['mean'][observation.current_time][0] \
-                        - (observation.data_min_x_wid[wid] + observation.data_max_x_wid[wid])/2 \
-                        + (observation.data_min_x_wid[0] + observation.data_max_x_wid[0])/2
-                    temp_y = self.data_ukf[wid]['mean'][observation.current_time][1] - \
-                        (observation.data_min_y_wid[wid] + observation.data_max_y_wid[wid])/2 \
-                            + (observation.data_min_y_wid[0] + observation.data_max_y_wid[0])/2
-                    w_xy = convert_longlat_to_xy_in_meters(temp_x, temp_y)
-                else:
-                    w_xy = convert_longlat_to_xy_in_meters(self.data_ukf[wid]['mean'][observation.current_time][0], self.data_ukf[wid]['mean'][observation.current_time][1])
-                # except Exception as e:
-                #     print(e)
-                observations_x_y_v_theta_up[wid, 0] = w_xy[0]
-                observations_x_y_v_theta_up[wid, 1] = w_xy[1]
-                dx = self.data_ukf[wid]['mean'][observation.current_time][2]
-                dy = self.data_ukf[wid]['mean'][observation.current_time][3]
-                # try:
-                w_v = get_distance_from_latLon_to_meter\
-                            (self.data_ukf[wid]['mean'][observation.current_time][1] + dy, self.data_ukf[wid]['mean'][observation.current_time][0] + dx, \
-                                self.data_ukf[wid]['mean'][observation.current_time][1], self.data_ukf[wid]['mean'][observation.current_time][0])
-                # except Exception as e:
-                #     print(e)
-                observations_x_y_v_theta_up[wid, 2] = w_v
-                observations_x_y_v_theta_up[wid, 3] = np.arctan2(dy, dx)
+                w_xy = convert_longlat_to_xy_in_meters(self.data_ukf[wid]['mean'][observation.current_time][0], self.data_ukf[wid]['mean'][observation.current_time][1])
+            observations_x_y_v_theta_up[wid, 0] = w_xy[0]
+            observations_x_y_v_theta_up[wid, 1] = w_xy[1]
+            dx = self.data_ukf[wid]['mean'][observation.current_time][2]
+            dy = self.data_ukf[wid]['mean'][observation.current_time][3]
+            w_v = get_distance_from_latLon_to_meter\
+                        (self.data_ukf[wid]['mean'][observation.current_time][1] + dy, self.data_ukf[wid]['mean'][observation.current_time][0] + dx, \
+                            self.data_ukf[wid]['mean'][observation.current_time][1], self.data_ukf[wid]['mean'][observation.current_time][0])
+            observations_x_y_v_theta_up[wid, 2] = w_v
+            observations_x_y_v_theta_up[wid, 3] = np.arctan2(dy, dx)
 
-                observations_x_y_v_theta_up[wid, 5] = self.data_ukf[wid]['mean'][observation.current_time][0]
-                observations_x_y_v_theta_up[wid, 6] = self.data_ukf[wid]['mean'][observation.current_time][1]
+            observations_x_y_v_theta_up[wid, 5] = self.data_ukf[wid]['mean'][observation.current_time][0]
+            observations_x_y_v_theta_up[wid, 6] = self.data_ukf[wid]['mean'][observation.current_time][1]
+            
             
             observations_x_y_v_theta_up[wid, 4] = observation.current_whale_up[wid]
 

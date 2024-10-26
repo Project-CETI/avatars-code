@@ -139,7 +139,6 @@ class MA_Rollout_science(Policy_base):
             future_scenarios.append(future_scenario)
         else:
             number_of_intervals = int(10 * np.ceil(state.knowledge.n_horizon_for_evaluation / (state.knowledge.down_time_mean + state.knowledge.surface_time_mean)))
-            # print(number_of_intervals)
             interval_up_times = np.maximum(state.knowledge.surface_time_var/self.div, \
                 np.random.normal(state.knowledge.surface_time_mean/self.div, state.knowledge.surface_time_var/self.div, \
                     size = state.number_of_whales * self.number_of_scenarios * number_of_intervals ))\
@@ -152,67 +151,22 @@ class MA_Rollout_science(Policy_base):
                 future_scenario = {wid:[] for wid in range(state.number_of_whales)}
                 for wid in range(state.number_of_whales):
                     if state.whale_up2[wid] == True:
-                        # # if we do not want full stochasticity for the future whales
-                        # if wid in current_wids: 
-                        #     interval_end_time = state.w_last_surface_start_time[wid] + interval_up_times[scene_id][wid][0]
-                        # else:
-                        #     interval_end_time = state.w_last_surface_start_time[wid] + state.knowledge.surface_time_mean
+                        
                         interval_end_time = int(state.w_last_surface_start_time[wid]/self.div) + interval_up_times[scene_id][wid][0]
                         future_scenario[wid] = [(int(state.w_last_surface_start_time[wid]/self.div), interval_end_time)]
                     else:
                         interval_end_time = int(state.w_last_surface_end_time[wid]/self.div)
                         future_scenario[wid] = [(int(state.w_last_surface_start_time[wid]/self.div), interval_end_time)]
-                    # int_id = 1
-                    # while interval_end_time < state.knowledge.n_horizon_for_evaluation:
                     for int_id in range(1, number_of_intervals):
-                        # # if we do not want full stochasticity for the future whales
-                        # if wid in current_wids: 
-                        #     interval_start_time = interval_end_time + interval_down_times[scene_id][wid][int_id]
-                        #     interval_end_time = interval_start_time + interval_up_times[scene_id][wid][int_id]
-                        # else:
-                        #     interval_start_time = interval_end_time + state.knowledge.down_time_mean
-                        #     interval_end_time = interval_start_time + state.knowledge.surface_time_mean
+                        
                         interval_start_time = interval_end_time + interval_down_times[scene_id][wid][int_id]
                         interval_end_time = interval_start_time + interval_up_times[scene_id][wid][int_id]
                         future_scenario[wid].append((interval_start_time, interval_end_time))
-                        # int_id += 1
+                        
                 future_scenarios.append(future_scenario)
         return future_scenarios, p
 
-    def update_future_old(self, state : Belief_State, wids_to_update: t.List[int], scene_id: int):
-        future_scenario = {wid:[] if wid in wids_to_update else self.future_scenarios[scene_id][wid] for wid in range(state.number_of_whales)} 
-        p = []
-        for wid in wids_to_update:
-            number_of_intervals = int(10 * np.ceil(state.knowledge.n_horizon_for_evaluation / (state.knowledge.down_time_mean + state.knowledge.surface_time_mean)))
-            
-            if self.number_of_scenarios == 1:
-                interval_up_times = [int(state.knowledge.surface_time_mean/self.div)]* number_of_intervals
-                interval_down_times = [int(state.knowledge.down_time_mean/self.div)]* number_of_intervals
-            else:
-                interval_up_times = np.maximum(state.knowledge.surface_time_var/self.div, \
-                    np.random.normal(state.knowledge.surface_time_mean/self.div, state.knowledge.surface_time_var/self.div, \
-                        size = number_of_intervals )).astype(int)
-            
-                interval_down_times = np.maximum(state.knowledge.down_time_var/self.div, \
-                    np.random.normal(state.knowledge.down_time_mean/self.div, state.knowledge.down_time_var/self.div, \
-                        size = number_of_intervals )).astype(int)
-
-            if state.whale_up2[wid] == True:
-                interval_end_time = max(0, int(state.w_last_surface_start_time[wid]/self.div) + interval_up_times[0])
-                future_scenario[wid] = [(int(state.w_last_surface_start_time[wid]/self.div), interval_end_time)]
-            else:
-                interval_end_time = int(state.w_last_surface_end_time[wid]/self.div)
-                future_scenario[wid] = [(int(state.w_last_surface_start_time[wid]/self.div), interval_end_time)]
-            int_id = 1
-            # while interval_end_time < state.knowledge.n_horizon_for_evaluation:
-            for int_id in range(1, number_of_intervals):
-                interval_start_time = interval_end_time + interval_down_times[int_id]
-                interval_end_time = interval_start_time + interval_up_times[int_id]
-                future_scenario[wid].append((interval_start_time, interval_end_time))
-                # int_id += 1
-
-        return future_scenario, p
-
+    
     def update_future(self, state : Belief_State, wids_to_update: t.List[int], scene_id: int):
         future_scenario = {wid:[] if wid in wids_to_update else self.future_scenarios[scene_id][wid] for wid in range(state.number_of_whales)} 
         p = []
@@ -246,7 +200,7 @@ class MA_Rollout_science(Policy_base):
                 mu = state.knowledge.down_time_mean/self.div
                 sigma = state.knowledge.down_time_var/self.div
                 lower = state.time/self.div - state.w_last_surface_end_time[wid]/self.div
-                upper = lower + state.knowledge.down_time_mean/self.div # 2 means
+                upper = lower + state.knowledge.down_time_mean/self.div 
                 interval_duration = truncnorm.rvs((lower-mu)/sigma,(upper-mu)/sigma,loc=mu,scale=sigma,size=1)[0]
                 interval_start_time = state.w_last_surface_end_time[wid]/self.div + interval_duration
                 interval_end_time = interval_start_time + interval_down_times[0]
@@ -254,12 +208,12 @@ class MA_Rollout_science(Policy_base):
                 interval_end_time = int(interval_end_time)
                 future_scenario[wid] = [(interval_start_time, interval_end_time)]
             int_id = 1
-            # while interval_end_time < state.knowledge.n_horizon_for_evaluation:
+            
             for int_id in range(1, number_of_intervals):
                 interval_start_time = interval_end_time + interval_down_times[int_id]
                 interval_end_time = interval_start_time + interval_up_times[int_id]
                 future_scenario[wid].append((interval_start_time, interval_end_time))
-                # int_id += 1
+               
 
         return future_scenario, p
 
@@ -271,17 +225,14 @@ class MA_Rollout_science(Policy_base):
         for scene_id in range(self.number_of_scenarios):
             time_taken_scene = 0
             current_assignment = copy.deepcopy(current_assignment_)
-            # state_scene = copy.deepcopy(state_orig)
-            # state_scene.surface_interval_scenario = self.future_scenarios[scene_id]
+            
             
             surface_start_times = {wid: [t[0] for t in self.future_scenarios[scene_id][wid]] for wid in range(state_orig.number_of_whales)}
             surface_end_times = {wid: [t[1] for t in self.future_scenarios[scene_id][wid]] for wid in range(state_orig.number_of_whales)}
             
             wids_to_update = []
             for wid in range(state_orig.number_of_whales):
-                # if (state_orig.time == state_orig.w_last_surface_start_time[wid] and int(state_orig.time/self.div) not in surface_start_times[wid]) \
-                #     or (state_orig.time == state_orig.w_last_surface_end_time[wid] and int(state_orig.time/self.div) not in surface_end_times[wid]) :
-                #     wids_to_update.append(wid)
+                
                 if (state_orig.whale_up2[wid] and \
                     not any([ss_se[0]<=int(state_orig.time/self.div) and ss_se[1]>=int(state_orig.time/self.div) for ss_se in self.future_scenarios[scene_id][wid]])) \
                         or (state_orig.whale_up2[wid] == 0 and \
@@ -290,8 +241,7 @@ class MA_Rollout_science(Policy_base):
             
             if len(wids_to_update) >= 1:
                 self.future_scenarios[scene_id], p = self.update_future(state_orig, wids_to_update, scene_id)
-                # state_scene.surface_interval_scenario = copy.deepcopy(self.future_scenarios[scene_id])
-                # print('updated scenario: ', scene_id, state_orig.time, wids_to_update)
+               
             
             state_scene : Rollout_Bel_class = Rollout_Bel_class(int(state_orig.time/self.div), state_orig.number_of_boats, np.copy(state_orig.b_x), np.copy(state_orig.b_y), \
                 state_orig.number_of_whales, np.copy(state_orig.w_x), np.copy(state_orig.w_y), \
@@ -333,11 +283,9 @@ class MA_Rollout_science(Policy_base):
                 
                 cost[nbid, nwid] = time
                 
-        # assignments = self.base_policy.mip_solver_2(cost)
         assinged_nbids, assigned_nwids = linear_sum_assignment(cost)
         
         assignment_bid_wid = {}
-        # for (nbid, nwid) in assignments:
         for aid, nbid in enumerate(assinged_nbids):
             nwid = assigned_nwids[aid]
             assignment_bid_wid[nbid_to_bid[nbid]] = nwid_to_wid[nwid]
@@ -356,7 +304,6 @@ class MA_Rollout_science(Policy_base):
                 wid = nwid_to_wid[nwid]
                 bid = nbid_to_bid[nbid]
                 st = state.state_copy(bid, wid)
-                # self.future_scenarios[scene_id][wid]
                 for scene_id in range(self.number_of_scenarios):
                     st.surface_interval_scenario = [self.future_scenarios[scene_id][wid]]
                     ia_output = self.base_policy.get_cost_of_single_assignment_for_a_scene(st)
@@ -392,14 +339,10 @@ class MA_Rollout_science(Policy_base):
                         bids_to_exclude.append(bid)
                         final_btheta_bv[bid] = (state.agent_loc_aoa[bid][0], state.knowledge.tagging_distance)
 
-            # if self.knowledge.overlay_GPS:
             final_assignment, _, costs_all_bp = self.get_auction(state, bids_to_exclude = bids_to_exclude)
-            # else:
-            #     final_assignment, costs_bp, costs_all_bp = self.base_policy.get_control_assignment(state, bids_to_exclude = bids_to_exclude)
-
+            
             for bid in bids_to_exclude:
                 final_assignment[bid] = state.agent_loc_aoa[bid][1]
-            # print('time: ', state.time, ', base_assignment: ', final_assignment, ', costs_all: ', costs_all_bp)
             if state.number_of_boats < (state.number_of_whales - len(state.assigned_whales)):
 
                 for bid in range(state.number_of_boats):
@@ -415,8 +358,6 @@ class MA_Rollout_science(Policy_base):
                         C[wid] = self.MC_Cost_with_future_scenarios(new_state, final_assignment)
                 
                     wid_to_assign = min(C, key=C.get)
-                    # print('time: ', state.time, ', bid: ', bid, ', C:', C, ', wid_to_assign:', wid_to_assign)
-                    # wid_to_assign = np.argmin([C[wid] for wid in C.keys()]) 
                     final_assignment[bid] = wid_to_assign
                     self.bid_whale_assignment[bid] = wid_to_assign
             else:
@@ -434,12 +375,10 @@ class MA_Rollout_science(Policy_base):
             elif bid in self.bid_whale_assignment.keys():
                 wid = self.bid_whale_assignment[bid]
                 u = self.get_MPC_control(state, bid, wid)
-                # arctan_u = np.arctan2(state.w_y[wid] - state.b_y[bid], state.w_x[wid] - state.b_x[bid])
                 u0 = np.mod(u[0], 2 * np.pi)
                 bthetas[bid] = float(u0)
                 bvs[bid] = float(u[1])
             
-        # print(state.time, bthetas, bvs)
         return Boat_Control(b_theta = np.array(bthetas), b_v = np.array(bvs))
         
         

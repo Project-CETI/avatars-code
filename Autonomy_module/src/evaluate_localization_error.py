@@ -52,17 +52,15 @@ class EvalObjectClass:
             self.loc_Pcov[wid].append(Pcov[wid])
 
             self.ups[wid].append(observations_x_y_v_theta_up[wid, 4])
-            # self.r_locs[wid].append(raw_obs.current_receivers_loc[wid][0])
+            
             if raw_obs.parameters.experiment_type in ['Benchmark_Shane_Data','Combined_Dominica_Data', 'Feb24_Dominica_Data']:
-                # try:
+                
                 loc_error = get_distance_from_latLon_to_meter(self.gt_y[wid][-1], self.gt_x[wid][-1], \
                         observations_x_y_v_theta_up[wid, 6], observations_x_y_v_theta_up[wid, 5])
-                # except Exception as e:
-                #     print(e)
+                
             else:
                 loc_error = np.linalg.norm([ self.gt_x[wid][-1] - self.loc_x[wid][-1], self.gt_y[wid][-1] - self.loc_y[wid][-1] ])
-            # if loc_error > 2000:
-            #     print('here: localization error more than 2000 for whale ',wid)
+            
             self.localization_error[wid].append(loc_error)
         self.l += 1
         if plot == False:
@@ -81,9 +79,8 @@ class EvalObjectClass:
                         c = 'black' if raw_obs.current_whale_up[wid] else 'red', label ='receiver current location')
         
            
-            if 1==1:
-                plt.scatter(observations_x_y_v_theta_up[wid, 5], observations_x_y_v_theta_up[wid, 6], \
-                    c = 'royalblue' if raw_obs.current_whale_up[wid] else 'black', label ='Mean whale particles')
+            plt.scatter(observations_x_y_v_theta_up[wid, 5], observations_x_y_v_theta_up[wid, 6], \
+                c = 'royalblue' if raw_obs.current_whale_up[wid] else 'black', label ='Mean whale particles')
                
             
             
@@ -93,12 +90,11 @@ class EvalObjectClass:
                 label = 'Whale true previous locations', c = np.array(['magenta' if w_up else 'red' for w_up in self.ups[wid]]), s = 1)
             
            
-            if 1==1:
-                plt.scatter(self.loc_long[wid], self.loc_lat[wid],\
-                    label = 'Previous mean whale particles', \
-                        c = np.array(['royalblue' if w_up else 'black' for w_up in self.ups[wid]]), s = 1)
-                if len(self.receiver_long[wid]) > 0:
-                    plt.scatter(self.receiver_long[wid], self.receiver_lat[wid], label = 'Sensor', c = 'green', s = 1)
+            plt.scatter(self.loc_long[wid], self.loc_lat[wid],\
+                label = 'Previous mean whale particles', \
+                    c = np.array(['royalblue' if w_up else 'black' for w_up in self.ups[wid]]), s = 1)
+            if len(self.receiver_long[wid]) > 0:
+                plt.scatter(self.receiver_long[wid], self.receiver_lat[wid], label = 'Sensor', c = 'green', s = 1)
 
             if len(self.ups[wid]) > 0:
                 plt.title('Particles after '+ str(self.l) +' steps, whale is ' + ('up' if raw_obs.current_whale_up[wid] else 'down'))
@@ -111,7 +107,7 @@ class EvalObjectClass:
 
             if not os.path.exists(folder_wid):
                 os.makedirs(folder_wid)
-            # plt.savefig(folder_wid + 'particles' + str(self.l) +'.png')
+            
             plt.savefig(folder_wid + 'particles.png')
             
             plt.close()
@@ -130,4 +126,4 @@ class EvalObjectClass:
             plt.savefig(folder_wid + 'localization_error.png')
     
             plt.cla()
-            # self.ax.cla()
+            

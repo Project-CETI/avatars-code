@@ -21,7 +21,7 @@ class Filter:
 class Adaptive_UKF_ARCTAN(Filter):
     
     def __init__(self, parameters: Global_knowledge) -> None:
-        # self.speed = 0 
+        
         self.parameters : Global_knowledge = parameters
         self.T = 1
         self.F = np.array([[1, 0, self.T, 0], [0, 1, 0, self.T], [0, 0, 1, 0], [0, 0, 0, 1]])
@@ -287,7 +287,7 @@ class Adaptive_UKF_ARCTAN(Filter):
             self.calculated_theta_whale_up = True
             
 
-            t_window = len(self.surface_behavior_ys) # min(len(self.surface_behavior_ys), 60*5)
+            t_window = len(self.surface_behavior_ys) 
             values_x = np.array(self.surface_behavior_xs[-t_window:])
             values_y = np.array(self.surface_behavior_ys[-t_window:])
             ts = self.surface_behavior_ts[-t_window:]
@@ -334,8 +334,8 @@ class Adaptive_UKF_ARCTAN(Filter):
             next_point = get_gps_from_start_vel_bearing(self.hat_x_k[0,0], self.hat_x_k[1,0], speed, theta_)
             self.delta_x = next_point[0] - self.hat_x_k[0,0]
             self.delta_y = next_point[1] - self.hat_x_k[1,0]
-            self.hat_x_k[2,0] = self.delta_x #/10
-            self.hat_x_k[3,0] = self.delta_y #/10
+            self.hat_x_k[2,0] = self.delta_x
+            self.hat_x_k[3,0] = self.delta_y
 
 
 

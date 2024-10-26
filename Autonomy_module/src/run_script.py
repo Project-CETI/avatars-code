@@ -49,9 +49,6 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
         if policy_name is None:
             policy = MA_Rollout_science(knowledge = parameter, state = belief_state, \
                 CE = False, commitment = False, direction = False, rollout_time_dist = rollout_time_dist)
-            # policy = BLE(knowledge = parameter, state = belief_state)
-            # policy = VRP_TW(knowledge=parameter, state = belief_state)
-            # policy = Policy_base()
         else:
             if policy_name == 'MA_rollout':
                 policy = MA_Rollout_science(knowledge = parameter, state = belief_state, \
@@ -71,16 +68,12 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
         log_file = open(log_filename, "w")
 
 
-        # observations_x_y_v_theta_up, Pcov = localization_filter.get_next_estimation(observation = raw_obs)
-        # evalObject.update_logs(raw_obs, observations_x_y_v_theta_up, Pcov, plot = debug, folder_ = folder_)
         
 
         log_file.write(belief_state.state_string())
         log_file.flush()
 
-        # if run_id == -1 or debug == True:
-        #     belief_state.plot_state(path = folder_)
-
+        
         for time_step in range(int(parameter.n_horizon_for_evaluation/parameter.observations_per_minute) - 1):
         
             
@@ -109,7 +102,6 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
                             raw_obs.gt_for_eval[wid, 1] = observations_x_y_v_theta_up[wid, 6]
                                 
 
-                            # for wid in range(parameter.number_of_whales):
                             if gt.current_whale_xs[wid] is None:
                                 g_w_xys[wid] = None
                                 continue
@@ -132,7 +124,6 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
                 evalObject.update_logs(raw_obs, observations_x_y_v_theta_up, Pcov, plot = debug if sec == 0 else False, folder_ = folder_)
 
                     
-                # prev_assigned = len(belief_state.assigned_whales)
                 belief_state.next_state(scaled_control, \
                     observations_x_y_v_theta_up = observations_x_y_v_theta_up, Pcov = Pcov, \
                         ground_truth_for_evaluation = g_w_xys, \
@@ -145,8 +136,6 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
                 log_file.flush()
                 if raw_obs.terminal():
                     break
-            # if run_id == -1 or debug == True:
-            #     belief_state.plot_state(path = folder_)
             if raw_obs.terminal():
                 break
                 
@@ -157,13 +146,6 @@ def run_thread(parameter: Global_knowledge, run_id = 0, debug = False, dont_run_
 
         loc_error_filename = folder_ + 'loc_error.csv'
 
-        # for wid in range(parameter.number_of_whales):
-        #     plt.scatter(np.arange(len(evalObject.localization_error[wid])), evalObject.localization_error[wid])
-        #     mean_err = round(np.mean(evalObject.localization_error[wid]),2)
-        #     std_err = round(np.std(evalObject.localization_error[wid]),2)
-        #     plt.title('Localization error mean:' + str(mean_err) + ' std:' +str(std_err))
-        #     plt.savefig(folder_ + 'loc_error'+str(wid)+'.png')
-        #     plt.close()
         with open(loc_error_filename, "w") as loc_error_file:
             allw_loc_error = sum([evalObject.localization_error[wid] for wid in range(parameter.number_of_whales)], [])
             loc_error_file.write(str(np.mean(allw_loc_error)) +','+ str(np.std(allw_loc_error))+','+ str(len(allw_loc_error))+'\n')
@@ -182,11 +164,8 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         f = open(sys.argv[1], "r")
     else:
-        # f = open("src/configs/config_Dominica_Feb24.json", "r")
-        # f = open("src/configs/config_Dominica_Nov23.json", "r")
         f = open("src/configs/config_Benchmark.json", "r")
-        # f = open('src/configs/rebuttal_runs/config_DSWP_r500_Acoustic_xy_VHF_xy_w4_a2.json')
-    
+        
     policy_name = None
     if len(sys.argv) > 2:
         policy_name = sys.argv[2]
@@ -197,7 +176,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 4:
         num_processes = knowledge.average_num_runs
         pool = multiprocessing.Pool(num_processes)
-        # parameter, run_id, debug, dont_run_policy, seed, rollout_time_dist
         processes = [pool.apply_async(run_thread, args = (knowledge, run_id, False, False, None, False, policy_name)) \
             for run_id in range(num_processes)]
         results = [p.get() for p in processes]
@@ -205,8 +183,6 @@ if __name__ == '__main__':
         pool.close()
         pool.join()
     else:
-        # for i in range(100):
-        # seed_for_run_id = (os.getpid() * int(time.time())) % 123456789
         seed_for_run_id = None
         run_thread(parameter = knowledge, run_id = -1, debug = False, dont_run_policy = False, seed = seed_for_run_id, \
             rollout_time_dist = False)
