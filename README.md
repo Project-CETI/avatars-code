@@ -1,7 +1,7 @@
 # Title of Dataset
 [Access this dataset on Dryad](https://doi.org/10.5061/dryad.05qfttfc9)
 
-[Access this dataset on github](https://github.com/Project-CETI/avatars-data)
+[Access this dataset on github](https://github.com/Project-CETI/avatars-code/)
 
 This dataset contains files to regenerate results from the paper ``Reinforcement Learning-Based Framework for Whale Rendezvous via Autonomous Sensing Robots''.
 The dataset and code repo includes data files used to parse acoustic and VHF data and to run the multiagent rollout code to route robots to rendezvous with whales in postprocessing. The repository also includes code and data for computing AOA for VHF signals using the drone's trajectory effectively emulating a synthetic aperture radar. The sensing code files enable the computation of the VHF AOA in real-time.
