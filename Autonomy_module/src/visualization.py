@@ -108,7 +108,8 @@ class Visualize_file:
         ax.set(xlim = [self.boundary_x[0] - 1500, self.boundary_x[1] + 1500], ylim = [self.boundary_y[0] - 1500, self.boundary_y[1] + 1500], \
             xlabel = 'Easting (in meters)', ylabel = 'Northing (in meters)', title = 'Top view of results of autonomous routing')
         ax.set_ylabel('Northing (in meters)', rotation=90)
-        plt.setp(ax.get_yticklabels(), ha="right", rotation=90)
+        plt.setp(ax.get_yticklabels(), ha="right", rotation=55)
+        plt.setp(ax.get_xticklabels(), ha="right", rotation=30)
 
        
         

@@ -10,3 +10,6 @@ exif
 opencv-python
 ortools
 imageio
+plotly
+seaborn
+inflect
