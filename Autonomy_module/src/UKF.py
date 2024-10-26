@@ -26,23 +26,15 @@ class Adaptive_UKF_ARCTAN(Filter):
         self.T = 1
         self.F = np.array([[1, 0, self.T, 0], [0, 1, 0, self.T], [0, 0, 1, 0], [0, 0, 0, 1]])
     
-        # if parameters.experiment_type == 'Benchmark_Shane_Data':
-        #     self.Q = np.array([[10 * np.power(self.T, 2) / 2, 0, 10 * np.power(self.T, 1) / 1, 0], \
-        #         [0, 10 * np.power(self.T, 2) / 2, 0, 10 * np.power(self.T, 1) / 1], \
-        #             [0, 0, 10 * self.T, 0], \
-        #                 [0, 0, 0, 10 * self.T]])
-        # else:
-        if 1==1:
-            ie = np.diag([1e-10, 1e-10, 1e-20, 1e-20])
-            self.Q = np.array([[ie[0,0] * np.power(self.T, 2) / 2, 0, ie[2,2] * np.power(self.T, 1) / 1, 0], \
-                [0, ie[1,1] * np.power(self.T, 2) / 2, 0, ie[3,3] * np.power(self.T, 1) / 1], \
-                    [0, 0, ie[2,2] * self.T, 0], \
-                        [0, 0, 0, ie[3,3] * self.T]])
+        
+        ie = np.diag([1e-10, 1e-10, 1e-20, 1e-20])
+        self.Q = np.array([[ie[0,0] * np.power(self.T, 2) / 2, 0, ie[2,2] * np.power(self.T, 1) / 1, 0], \
+            [0, ie[1,1] * np.power(self.T, 2) / 2, 0, ie[3,3] * np.power(self.T, 1) / 1], \
+                [0, 0, ie[2,2] * self.T, 0], \
+                    [0, 0, 0, ie[3,3] * self.T]])
 
         self.n = self.Q.shape[0]
         if parameters.observation_type in ['Acoustic_xy_VHF_xy', 'Acoustic_xy_no_VHF']:
-            # self.R_down = parameters.Acoustic_XY_obs_error_cov_m2[0]
-            # self.R_up = parameters.Vhf_XY_obs_error_cov_m2[0]
             self.R_down = np.diag([2e-6, 2e-6])
             self.R_up = np.diag([1e-8, 1e-8])
         else:
@@ -68,9 +60,9 @@ class Adaptive_UKF_ARCTAN(Filter):
         if self.parameters.experiment_type == 'Benchmark_Shane_Data':
             self.P_k = np.copy(covariance)
 
-        self.surface_behavior_ys = [] #[self.hat_x_k[1, 0]]
-        self.surface_behavior_xs = [] #[self.hat_x_k[0, 0]]
-        self.surface_behavior_ts = [] #[0]
+        self.surface_behavior_ys = [] 
+        self.surface_behavior_xs = [] 
+        self.surface_behavior_ts = [] 
 
     def system_equation(self, x: np.ndarray, v: np.ndarray):
         fx = np.matmul(self.F, x)
@@ -86,26 +78,15 @@ class Adaptive_UKF_ARCTAN(Filter):
             (observation.current_whale_up and self.parameters.vhf_obs_type == 'AOA') or \
                 (observation.current_whale_up == False and self.parameters.acoustic_obs_type == 'AOA'):
             theta = np.zeros(shape = (len(observation.receiver_current_loc), x.shape[1]))
-            # try:
-            # if self.parameters.experiment_type == 'Benchmark_Shane_Data':
+            
+            for l, observer_loc in enumerate(observation.receiver_current_loc): 
+                p1_long = observer_loc[0]
+                p2s_long = x[0,:]
+                p1_lat = observer_loc[1]
+                p2s_lat = x[1, :]
+                for i in range(p2s_lat.shape[0]):
+                    theta[l,i] = np.mod(Geodesic.WGS84.Inverse(p1_lat, p1_long, p2s_lat[i], p2s_long[i])['azi1'], 360)
                     
-            #         for l, observer_loc in enumerate(observation.receiver_current_loc): 
-            #             y0 = x[1, :] - observer_loc[1]
-            #             x0 = x[0, :] - observer_loc[0]
-            #             theta_ = np.arctan2(y0, x0) * Radian_to_degree
-            #             theta[l, :] = theta_
-            # else:
-            if 1==1:
-                    for l, observer_loc in enumerate(observation.receiver_current_loc): 
-                        p1_long = observer_loc[0]
-                        p2s_long = x[0,:]
-                        p1_lat = observer_loc[1]
-                        p2s_lat = x[1, :]
-                        for i in range(p2s_lat.shape[0]):
-                            theta[l,i] = np.mod(Geodesic.WGS84.Inverse(p1_lat, p1_long, p2s_lat[i], p2s_long[i])['azi1'], 360)
-                    # return theta.reshape(1, p2s_lat.shape[0])
-            # except Exception as e:
-            #     print('Debug')
             return theta
 
         elif (observation.current_whale_up and self.parameters.vhf_obs_type == 'xy') or \
@@ -133,6 +114,7 @@ class Adaptive_UKF_ARCTAN(Filter):
         return None
 
     def isPD(self, B):
+        # This function is taken from https://github.com/florisvb/pyUKFsqrt/blob/main/ukf_sqrt/utils.py
         """Returns true when input is positive-definite, via Cholesky"""
         try:
             _ = np.linalg.cholesky(B)
@@ -141,7 +123,7 @@ class Adaptive_UKF_ARCTAN(Filter):
             return False
 
     def find_nearest_PSD(self, A):
-        # https://github.com/florisvb/pyUKFsqrt/blob/main/ukf_sqrt/utils.py
+        # This function is taken from https://github.com/florisvb/pyUKFsqrt/blob/main/ukf_sqrt/utils.py
         A[np.isnan(A)] = 0
         A[np.isinf(A)] = 0
     
@@ -215,8 +197,7 @@ class Adaptive_UKF_ARCTAN(Filter):
             except Exception as e:
                 print('PD ?', e)
 
-            # self.P_k = np.diag([self.parameters.initial_obs_xy_error[0,0]]*4)
-            # self.U = cholesky((self.n + self.lambda_) * self.P_k)
+            
 
         # Calculate sigma points
         points = np.zeros((self.n, 2 * self.n + 1))
@@ -236,8 +217,8 @@ class Adaptive_UKF_ARCTAN(Filter):
                 np.transpose(predicted_error_XX)) * Wc[i] 
         predicted_P += self.Q
 
-        observed_z = self.extract_observed_value(observation) # N \times 1
-        # if (observed_z is not None and not np.isnan(observed_z).any()) and len(observed_z) > 0:
+        observed_z = self.extract_observed_value(observation) 
+        
         if self.parameters.experiment_type == 'Benchmark_Shane_Data':
             flag = (observed_z is not None and not np.isnan(observed_z).any() and len(observed_z) > 0)
         else:
@@ -278,6 +259,7 @@ class Adaptive_UKF_ARCTAN(Filter):
 
             if self.isPD(self.P_k): # is not positive definite Do something   
                 self.P_k = self.find_nearest_PSD(self.P_k)
+                # References for the find_nearest_PSD implemetation are the following
                 # A Python/Numpy port of John D'Errico's `nearestSPD` MATLAB code [1], which credits [2].
                 # [1] https://www.mathworks.com/matlabcentral/fileexchange/42885-nearestspd
                 # [2] N.J. Higham, "Computing a nearest symmetric positive semidefinite
@@ -297,33 +279,28 @@ class Adaptive_UKF_ARCTAN(Filter):
 
         if np.isnan(self.P_k).any() or np.isnan(self.hat_x_k).any():
             print('UKF: state_estimation_AOA: np.isnan(self.P_k).any() or np.isnan(self.hat_x_k).any()')
-        # return Loc_xy(x = self.hat_x_k[0,0], y = self.hat_x_k[1,0]), self.P_k
+        
 
     def estimate_theta_from_surface_behavior(self, whale_up):
         if self.parameters.experiment_type in ['Combined_Dominica_Data', 'Feb24_Dominica_Data'] \
             and len(self.surface_behavior_ys) > 120 and whale_up:
             self.calculated_theta_whale_up = True
-            # if self.prev_len_surface_behavior == len(self.surface_behavior_ts) and self.refresh_data == False:
-            #     return
+            
 
-            # len = len(self.surface_behavior_ys)
             t_window = len(self.surface_behavior_ys) # min(len(self.surface_behavior_ys), 60*5)
             values_x = np.array(self.surface_behavior_xs[-t_window:])
             values_y = np.array(self.surface_behavior_ys[-t_window:])
             ts = self.surface_behavior_ts[-t_window:]
-            # speed = np.mean([np.sqrt((x1 - x0)**2 + (y1 - y0)**2)/(t1 - t0) for x0, x1, y0, y1, t0, t1 \
-            #     in zip(values_x[:-1], values_x[1:], values_y[:-1], values_y[1:], ts[:-1], ts[1:]) ])
             speed = np.mean([get_distance_from_latLon_to_meter(y0, x0, y1, x1)/(t1 - t0) for x0, x1, y0, y1, t0, t1 \
                 in zip(values_x[:-1], values_x[1:], values_y[:-1], values_y[1:], ts[:-1], ts[1:]) ])
             speed = min(speed, Whale_speed_mtpm/(5*60))
-            # speed = min([2.2522522522522524e-6, speed])
             
             NSxy = t_window * np.sum(np.multiply(values_x, values_y))
             SxSy = np.sum(values_x) * np.sum(values_y)
             NSx2 = t_window * np.sum(np.square(values_x))
             Sx2 = np.square(np.sum(values_x))
             
-            slope_line = (NSxy - SxSy) / (NSx2 - Sx2) # np.arctan2(NSxy - SxSy, NSx2 - Sx2)
+            slope_line = (NSxy - SxSy) / (NSx2 - Sx2) 
             Sy = np.sum(values_y)
             Sx = np.sum(values_x)
             intercept_line = (Sy - slope_line * Sx) / t_window
@@ -352,8 +329,7 @@ class Adaptive_UKF_ARCTAN(Filter):
                 theta = np.arctan2(end_meet_y - start_meet_y, end_meet_x - start_meet_x)
 
 
-            # delta_x = speed * np.cos(theta)
-            # delta_y = speed * np.sin(theta)
+            
             theta_ = angle_diff_radian(np.pi/2, theta)
             next_point = get_gps_from_start_vel_bearing(self.hat_x_k[0,0], self.hat_x_k[1,0], speed, theta_)
             self.delta_x = next_point[0] - self.hat_x_k[0,0]
@@ -395,8 +371,7 @@ class Adaptive_UKF_ARCTAN(Filter):
             except Exception as e:
                 print('PD ?', e)
 
-            # self.P_k = np.diag([self.parameters.initial_obs_xy_error[0,0]]*4)
-            # self.U = cholesky((self.n + self.lambda_) * self.P_k)
+           
 
         # Calculate sigma points
         points = np.zeros((self.n, 2 * self.n + 1))
@@ -506,6 +481,7 @@ class Adaptive_UKF_ARCTAN(Filter):
 
             if self.isPD(self.P_k): # is not positive definite Do something   
                 self.P_k = self.find_nearest_PSD(self.P_k)
+                # References for the find_nearest_PSD implemetation are the following
                 # A Python/Numpy port of John D'Errico's `nearestSPD` MATLAB code [1], which credits [2].
                 # [1] https://www.mathworks.com/matlabcentral/fileexchange/42885-nearestspd
                 # [2] N.J. Higham, "Computing a nearest symmetric positive semidefinite
@@ -539,10 +515,10 @@ class Adaptive_UKF_ARCTAN(Filter):
             print('UKF: state_estimation_AOA: np.isnan(self.P_k).any() or np.isnan(self.hat_x_k).any()')
 
         
-        # return Loc_xy(x = self.hat_x_k[0,0], y = self.hat_x_k[1,0]), self.P_k
+       
     
     def state_estimation_xy(self, observation: ObservationClass_whale):
-        # return Loc_xy(x = self.hat_x_k[0,0], y = self.hat_x_k[1,0]), self.P_k
+        
         NotImplemented
 
 

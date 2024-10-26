@@ -8,3 +8,5 @@ scipy
 do-mpc
 exif
 opencv-python
+ortools
+imageio

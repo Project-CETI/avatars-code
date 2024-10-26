@@ -5,17 +5,16 @@ from src.belief_state import Belief_State
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import combinations
+from src.rebuttal_runs.pretty_plot_dswp import plot_results_dswp, plot_results_engg_real, plot_miss_freq_results_engg_real
 metric_result_keys = ['successful_opportunity','missed_opportunity', 'mission_time', 'whale_not_visited', 'time_bw_successive_rendezvous'] +\
     ['whale_missed_prob']
 
 
-def plot_run_id(num_agent, num_whale, tagging_radius, policy_name, output_base, run_id, date_combi):
-    # suffix = '_r' + str(tagging_radius) + '_w' + str(num_whale) + '_a' + str(num_agent)# + '_i' + str(run_id)
+def deprecated_plot_run_id(num_agent, num_whale, tagging_radius, policy_name, output_base, run_id, date_combi):
     if expedition == 'Benchmark':
         suffix = '_' + observation_type+ '_r' + str(tagging_radius)  + '_w'+ str(num_whale) + '_a' + str(num_agent)
     else:
         suffix = '_r' + str(tagging_radius) + '_w' + '_'.join(date_combi) + '_a' + str(num_agent)
-    # suffix2 = suffix + '_i' + str(run_id)
     output_base_suffix = output_base + suffix + '/'
     state_filename = output_base_suffix + 'Run_' + str(run_id) + '/' + policy_name + '/state_log.csv'
     png_filename = output_base_suffix + 'Run_' + str(run_id) + '/' + policy_name + '/states.png'
@@ -30,8 +29,6 @@ def plot_run_id(num_agent, num_whale, tagging_radius, policy_name, output_base, 
         suffix2 = '_r' + str(tagging_radius) + '_' + observation_type + '_w'+str(num_whale) + '_a' + str(num_agent)
         config_filename = 'src/configs/rebuttal_runs/config_DSWP' + suffix2 + '.json'
 
-    # config_filename = 'src/configs/rebuttal_runs/config_Dominica_Feb24' + suffix + '.json'
-    # config_filename = 'src/configs/rebuttal_runs/config_Dominica_Nov23' + suffix + '.json'
     with open(config_filename, 'r') as file:
         config_obj = json.load(file)
 
@@ -60,20 +57,14 @@ def plot_run_id(num_agent, num_whale, tagging_radius, policy_name, output_base, 
             
             plt.scatter(history['a'][bid]['x'][:], history['a'][bid]['y'][:], label = 'bid_'+str(bid), s =0.1)
             plt.scatter(history['a'][bid]['x'][0], history['a'][bid]['y'][0], s = 20, label = 'bid0_'+str(bid))
-        # print(history['a'][0]['x'][:10], history['a'][0]['x'][0])
-
+        
         plt.legend()
         print(png_filename)
         plt.savefig(png_filename)
-        # plt.savefig(output_base_suffix + 'Run_' + str(run_id) + '/MA_rollout/' + suffix2 + ".png")
         plt.close()
 
 
 def read_metric_for_states(observation_type, num_agent, num_whale, tagging_radius, policy_name, output_base, date_combi):
-    # suffix = '_r' + str(tagging_radius) + '_w' + str(num_whale) + '_a' + str(num_agent)
-    # if expedition == 'Nov23':
-    #     suffix = '_r' + str(tagging_radius) + '_w'+ str(num_whale) + '_'.join(date_combi) + '_a' + str(num_agent)
-    # else:
     if expedition == 'Benchmark':
         suffix = '_' + observation_type+ '_r' + str(tagging_radius)  + '_w'+ str(num_whale) + '_a' + str(num_agent)
     else:
@@ -108,10 +99,7 @@ def read_metric_for_states(observation_type, num_agent, num_whale, tagging_radiu
                     missed_opportunity_num += np.sum([ 1 for wid in range(st.number_of_whales) \
                     if whale_prev_up[wid] and not st.whale_up2[wid] and \
                         wid not in st.assigned_whales])
-                        # start_time <= st.w_last_surface_start_time[wid] and st.w_last_surface_end_time[wid] < st.time \
-                        #     and wid not in st.assigned_whales])
-                    # distance_moved += np.sum([np.sqrt((previous_bxs[bid] - st.b_x[bid])**2 + (previous_bys[bid] - st.b_y[bid])**2)/1000 \
-                    #     for bid in range(st.number_of_boats)])
+                        
                     for wid in range(st.number_of_whales):
                         if wid not in previous_assigned and wid in st.assigned_whales:
                             rendezvous[wid] = (st.time - rendezvous[wid])/60
@@ -152,16 +140,14 @@ def read_metric_for_states(observation_type, num_agent, num_whale, tagging_radiu
             for mkey, mval in metric_result.items() if mkey != 'whale_missed_prob']) + ',' + \
                 ','.join([str(mv) for mv in metric_result['whale_missed_prob']])
     print(line)
-    # with("rebuttal_output_Feb24/results.csv", "w") as f:
-        
-    #     f.write(line + '\n')
+    
     return metric_result, line
 
 
 
 
-if __name__ == '__main__':#evalmetric':
-    # policy_name = 'MA_rollout_time_dist'
+if __name__ == '__main__':
+   
     
     expedition = ''
     if len(sys.argv) > 1:
@@ -210,18 +196,7 @@ if __name__ == '__main__':#evalmetric':
 
     print(metric_output, output_base)
     
-    # for no,observation_type in enumerate(observation_types):
-    #     for na,num_agent in enumerate(num_agents):
-    #         for nw,num_whale in enumerate(num_whales):
-    #             if num_whale <= num_agent:
-    #                 continue
-    #             for date_combi_id, date_combi in enumerate(combinations_of_dates[num_whale]):
-    #                 for nt, tagging_radius in enumerate(tagging_radii):
-    #                     for run_id in range(50):
-    #                         plot_run_id(num_agent = num_agent, num_whale = num_whale, tagging_radius = tagging_radius, policy_name = policy_name, \
-    #                             output_base = output_base, run_id = run_id, date_combi = date_combi)
-    # exit()
-    
+   
     
     
         
@@ -233,26 +208,21 @@ if __name__ == '__main__':#evalmetric':
         len(tagging_radii),2)) \
         for mname in metric_result_keys}
     all_metric_summarized = {}
-    # all_metric_summarized = {mname: np.zeros((len(num_agents), len(num_whales), \
-    #     num_whales, \
-    #     len(tagging_radii),2)) \
-    #     for mname in metric_result_keys}
+    
     line = 'observation_type,num_agent,num_whale,dates,tagging_radius,' \
                 + ','.join([mname + '_mean,'+ mname + '_std' for mname in metric_result_keys])
     print(line)
     all_metric_filename = expedition+'_'+policy_name+'_same_rejection_metrics'
     all_metric_summarized_filename = expedition+'_'+policy_name+'_same_rejection_summary_metrics'
-    if not isfile(metric_output + all_metric_filename) or not isfile(metric_output + all_metric_summarized_filename):
+    if 1==1: #not isfile(metric_output + all_metric_filename) or not isfile(metric_output + all_metric_summarized_filename):
         for no,observation_type in enumerate(observation_types):
             for na,num_agent in enumerate(num_agents):
                 for nw,num_whale in enumerate(num_whales):
-                    # if num_whale <= num_agent or (expedition == 'Nov23' and num_whale == 4 and num_agent != 2):
                     if [num_agent, num_whale] not in nagent_nwhales_combo:
                         continue
                     for date_combi_id, date_combi in enumerate(combinations_of_dates[num_whale]):
                         for nt, tagging_radius in enumerate(tagging_radii):
-                            # if num_whale == 4 and num_agent != 2:
-                            #     continue
+                            
                             metric, line = read_metric_for_states(observation_type, num_agent, num_whale, tagging_radius, policy_name, output_base, date_combi)
                             for mname in metric_result_keys:
                                 if mname != 'whale_missed_prob':
@@ -271,15 +241,14 @@ if __name__ == '__main__':#evalmetric':
                                         all_metric_summarized[(mname, observation_type, num_agent, num_whale, tagging_radius)] = \
                                             [metric[mname][i] + all_metric_summarized[(mname, observation_type, num_agent, num_whale, tagging_radius)][i] \
                                                 for i in range(num_whale+1)]
-                                # if mname == 'whale_missed_prob':
-                                #     print(all_metric_summarized[(mname, num_agent, num_whale, tagging_radius)])
+                               
         for dict_key in all_metric_summarized.keys():
             if dict_key[0] != 'whale_missed_prob':
                 all_metric_summarized[dict_key] = [np.mean(all_metric_summarized[dict_key]), np.std(all_metric_summarized[dict_key])]
             else:
                 all_metric_summarized[dict_key] = [all_metric_summarized[dict_key][i]/ sum(all_metric_summarized[dict_key]) \
                     for i in range(dict_key[3]+1)]
-                # print(all_metric_summarized[dict_key], sum(all_metric_summarized[dict_key]), all_metric_summarized[dict_key][0])
+                
         print()
         with open(metric_output + all_metric_filename, 'wb') as f:
             pickle.dump(all_metric, f)
@@ -289,35 +258,19 @@ if __name__ == '__main__':#evalmetric':
         
             
 
-    else:
-        with open(metric_output + all_metric_filename, 'rb') as f:
-            
-            all_metric = pickle.load(f)
-            for no,observation_type in enumerate(observation_types):
-                for na,num_agent in enumerate(num_agents):
-                    for nw,num_whale in enumerate(num_whales):
-                        if num_whale <= num_agent or (expedition == 'Nov23' and num_whale == 4 and num_agent != 2):
-                            continue
-                        for date_combi_id, date_combi in enumerate(combinations_of_dates[num_whale]):
-                            for nt, tagging_radius in enumerate(tagging_radii):
-                                line =observation_type + ','+ str(num_agent) + ',' + str(num_whale) + ','+ str(tagging_radius) + ','+\
-                                    ','.join([str(round(all_metric[mname][no, na,nw, date_combi_id, nt,0],2)) \
-                                        + ',' + str(round(all_metric[mname][no,na,nw, date_combi_id, nt,1],2)) \
-                                            for mname in metric_result_keys if mname != 'whale_missed_prob'])
-                                print(line)
-
-        with open(metric_output + all_metric_summarized_filename, 'rb') as f:
-            all_metric_summarized = pickle.load(f)
     
 
     
     def plot_summary():
-        metrics_to_plot = ['successful_opportunity','mission_time', 'whale_missed_prob']
+        string_for_nice_print = ''
         
-        metric_name_str = 'observation,num_agents,num_whales,radius,' + \
+        
+        metric_name_str = 'observation_type,num_agents,num_whales,tagging_radius,' + \
             ','.join([m + '_mean,' + m +'_std' for m in ['successful_opportunity','mission_time']]) + ','+\
                 'missing_1_or_more_whales_prob,' +  ','.join(['missed_'+str(w)+'whales_prob' for w in range(max(num_whales)+1)])
         print('\n'+metric_name_str)
+        string_for_nice_print += metric_name_str + '\n'
+
         for no, observation_type in enumerate(observation_types):
             for na,num_agent in enumerate(num_agents):
                 for nw,num_whale in enumerate(num_whales):
@@ -334,60 +287,20 @@ if __name__ == '__main__':#evalmetric':
                         line += ',' + str(1-ms[0])
                         line += ',' + ','.join([str(m) for m in ms])
                         print(line)
+                        string_for_nice_print += line + '\n'
 
-        for no, observation_type in enumerate(observation_types):
-            for mname in metrics_to_plot:
-                xticks = np.unique(['a' + str(mkey[2]) + '_w' + str(mkey[3]) for mkey in all_metric_summarized.keys()])
-                min_y = 0
-                max_y = None
-                if mname not in metrics_to_plot:
-                    continue
-                elif mname == 'successful_opportunity':
-                    max_y = 100
-                elif mname == 'whale_missed_prob':
-                    max_y = 2
-            
-                fig = plt.figure()
-                ax = fig.add_subplot(111)    
-                width = 0.1
-                for nt, tagging_radius in enumerate(tagging_radii):
-               
-                
-                    if mname in ['successful_opportunity','mission_time']:
-                        m_mean = [mval[0] for mkey, mval in all_metric_summarized.items() if mkey[0]==mname and mkey[3]==tagging_radius] 
-                        m_std = [mval[1] for mkey, mval in all_metric_summarized.items() if mkey[0]==mname and mkey[3]==tagging_radius] 
-                    else:
-                        m_mean = [sum(mval[1:]) for mkey, mval in all_metric_summarized.items() if mkey[0]==mname and mkey[3]==tagging_radius] 
-                        m_std = None
-                
-                    if m_std is not None:
-                        bars = ax.bar(np.arange(len(m_mean)) + width * nt, m_mean, width, yerr = m_std, label = 'r_'+str(tagging_radius))
-                    else:
-                        bars = ax.bar(np.arange(len(m_mean)) + width * nt, m_mean, width, label = 'r_'+str(tagging_radius))
-                    # print(m_std)
-                    for bid, bar in enumerate(bars):
-                        height = bar.get_height()
-                        if m_std is not None:
-                        
-                            height += m_std[bid]
-                            ax.text(bar.get_x() + bar.get_width() / 2, height, str(round(m_mean[bid],1)) + r"$\pm$" + str(round(m_std[bid],1)), ha='center', va='bottom', rotation = 45)
-                        else:
-                            print('whale_missed_prob', m_mean[bid])
-                            ax.text(bar.get_x() + bar.get_width() / 2, height, str(round(m_mean[bid],3)), ha='center', va='bottom', rotation = 45)
+        run_filename = 'src/rebuttal_runs/'+expedition+'_runs.csv'
+        with open(run_filename, 'w') as run_file:
+            run_file.write(string_for_nice_print)
+        if expedition == 'Benchmark':
+            plot_results_dswp(run_filename, metric_name='successful_opportunity', output_foldername = metric_output)
+            plot_results_dswp(run_filename, metric_name='mission_time', output_foldername = metric_output)
+    
+        elif expedition in ['Nov23', 'Feb24']:
+            plot_results_engg_real(run_filename, metric_name='successful_opportunity', output_foldername = metric_output)
+            plot_results_engg_real(run_filename, metric_name='mission_time', output_foldername = metric_output)
+            plot_miss_freq_results_engg_real(run_filename, output_foldername = metric_output)
 
-                        if mname == 'mission_time':
-                            min_y = min(min_y, height)
-                            max_y = max(max_y, height) if max_y is not None else height
-        
-        
-            
-                ax.set_xticks(np.arange(len(xticks)))
-                ax.set_xticklabels(xticks)
-            
-                ax.set_ylim(min_y, max_y)
-                plt.legend(ncol = len(tagging_radii))
-                plt.title(mname+' '+observation_type)
-                plt.savefig(metric_output + "results_summarized_" + observation_type + '_' + mname + ".png")
-                plt.close()
-
+    
+      
     plot_summary()
