@@ -349,7 +349,7 @@ def generate_trajectories_v2(last_seen_points, knowledge: Global_knowledge, plot
         
     if not plot_not_save:
         for (xe,ye,t) in list(zip(last_seen_points['xs'], last_seen_points['ys'], last_seen_points['ts'])):
-            plt.text(xe, ye, s = str(int(t/3600))+':'+str(int(t/60)), rotation = 90, c = 'blue')
+            plt.text(xe, ye, s = str(int(t/3600))+':'+str(int(time_str/60) -  int(t/3600) * 60), rotation = 90, c = 'blue')
         
     return whale_states, scenario
 
@@ -366,3 +366,71 @@ if __name__ == '__main__':
         full_traceback = traceback.extract_tb(e.__traceback__)
         filename, lineno, funcname, text = full_traceback[-1]
         print("Error in ", filename, " line:", lineno, " func:", funcname, ", exception:", e)
+
+
+if __name__ == '__main__generate_whale_trace_pngs':
+
+    directory = 'dswp_parsed_data_moving_sensors/'
+    for fn in os.listdir(directory):
+        xy_filename = os.path.join(directory, fn)
+        if os.path.isfile(xy_filename) and 'ground_truth.csv' not in xy_filename:
+            continue
+        whale_trace_old = pd.read_csv(xy_filename, \
+            names=['sensor_sec', 'w_long', 'w_lat', 'c_long', 'c_lat', 'fluke_angle'], header=None)
+        whale_trace_old = whale_trace_old.sort_values(by=['sensor_sec'])
+
+        k_ = 2
+        t_min = min(whale_trace_old['sensor_sec'].values)
+        t_max = max(whale_trace_old['sensor_sec'].values)
+        time_series = np.arange(t_min, t_max + 1)
+        x_tck = interpolate.splrep(whale_trace_old['sensor_sec'].values, whale_trace_old['w_long'].values, k = k_)
+        x_coords = interpolate.splev(time_series, x_tck)
+        y_tck = interpolate.splrep(whale_trace_old['sensor_sec'].values, whale_trace_old['w_lat'].values, k = k_)
+        y_coords = interpolate.splev(time_series, y_tck)
+        whale_trace = pd.DataFrame({'sensor_sec': time_series, 'w_long': x_coords, 'w_lat': y_coords})
+
+        xs = whale_trace['w_long'].values
+        ys = whale_trace['w_lat'].values
+        # cs = ['red' if w == 'G' else 'black' for w in whale_trace['sensor_name'].values]
+        plt.scatter(xs, ys, c = 'black', s = 1, label = 'underwater phase')
+            
+        surface_time_filename = directory + fn.replace('ground_truth.csv', 'surface_interval.csv')
+        surface_time_df = pd.read_csv(surface_time_filename, \
+            names=['surface_start', 'surface_stop', 'fluke_camera_aoa'], header=None)
+        start_time_rows = surface_time_df.merge(whale_trace, left_on='surface_start', right_on='sensor_sec')
+        end_time_rows = surface_time_df.merge(whale_trace, left_on='surface_stop', right_on='sensor_sec')
+
+        f_row = 0
+        for _, surface_row in surface_time_df.iterrows():
+            whale_trace_sur = whale_trace[((whale_trace['sensor_sec']>=surface_row['surface_start']) & \
+                (whale_trace['sensor_sec']<=surface_row['surface_stop'])) ]
+            
+            if f_row > 0:
+                plt.scatter(whale_trace_sur['w_long'].values, whale_trace_sur['w_lat'].values, c = 'red', s = 1)
+            else:
+                plt.scatter(whale_trace_sur['w_long'].values, whale_trace_sur['w_lat'].values, c = 'red', s = 1, label = 'surface phase')
+            f_row += 1
+        for _, start_time_row in start_time_rows.iterrows():
+            time_str = start_time_row['sensor_sec']
+            hour = int(time_str/3600)
+            minute = int(time_str/60) -  hour * 60
+            if hour < 0 or minute < 0:
+                continue  
+            time_str = str(hour) + ':' + str(minute)
+            plt.text(start_time_row['w_long'], start_time_row['w_lat'], s = time_str, rotation = 90, c = 'blue')
+
+        for _, end_time_row in end_time_rows.iterrows():
+            time_str = end_time_row['sensor_sec']
+            hour = int(time_str/3600)
+            minute = int(time_str/60) -  hour * 60
+            if hour < 0 or minute < 0:
+                continue  
+            time_str = str(hour) + ':' + str(minute)
+            plt.text(end_time_row['w_long'], end_time_row['w_lat'], s = time_str, rotation = 90, c = 'blue')
+
+        plt.xlabel('Longitude')
+        plt.ylabel('Latitude')
+        plt.yticks(rotation = 45)
+        plt.legend()
+        plt.savefig(directory + 'whale_track_' + fn.replace('ground_truth.csv', '') + '.png')
+        plt.cla()

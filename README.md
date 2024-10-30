@@ -36,6 +36,7 @@ dswp_parsed_data_moving_sensors
 |- yyyy-mm-dd_####ground_truth.csv
 |- yyyy-mm-dd_####surface_interval.csv
 |- yyyy-mm-dd_####xy.csv
+|- whale_track_yyyy-mm-dd_####.png
 |- ...
 ```
 
@@ -48,21 +49,28 @@ dswp_parsed_data_moving_sensors
 <li>
 
 `yyyy-mm-dd_####aoa.csv`: each line has the time in seconds, sensor longitude, sensor latitude, angle of arrival obtained from the sensor, angle of arrival candidate 1 due to left-right ambiguity, angle of arrival candidate 2 due to left-right ambiguity, standard deviation (in degree) of zero mean gaussian error of the sensor, sensor type ('A' for acoustic and 'V' for VHF).
+The fourth column (angle of arrival obtained from the sensor) may be left blank if both candidates for aoa is present.
 </li>
 
 <li>
 
-`yyyy-mm-dd_####ground_truth.csv'`: each line has the time in seconds, fluke longitude, fluke latitude, camera lonitude, camera latitude, fluke angle in degree
+`yyyy-mm-dd_####ground_truth.csv`: each line has the time in seconds, fluke longitude, fluke latitude, camera lonitude, camera latitude, fluke angle in degree.
+Since the camera location and fluke angle are not used in the ablation study, the last 3 columns are blank.
 </li>
 
 <li>
 
-`yyyy-mm-dd_####surface_interval.csv`: each line has the surface interval start time in minutes, surface interval end time in minutes, and the fluke angle in degrees 
+`yyyy-mm-dd_####surface_interval.csv`: each line has the surface interval start time in minutes, surface interval end time in minutes, and the fluke angle in degrees.
+If the fluke angle is not obtained it is set to None.
 </li>
 
 <li>
 
 `yyyy-mm-dd_####xy.csv`: each line has the time in seconds, the longitude of a whale with sensing error, the latitude of a whale with sensing error, the standard deviation of the longitude of whale location, the standard deviation of the latitude of whale location, sensor type ('U' for underwater location, 'G' for GPS)
+</li>
+<li>
+
+`whale_track_yyyy-mm-dd_####.png`: visulization of the whale trace in GPS coordinates. The surface phase is indcated in red, and the underwater phase is indicated in black. The surface interval start and end times are indicated in HH:MM format in the figure. The times in the figure are calculated from start of the trace.
 </li>
 </ul>
 
@@ -281,21 +289,6 @@ d. The RPI_SDR_data_collection_code has the python scripts to get data from the 
 
 The position and GPS data (for groundtruth) needs to be collected usign the mavros API and ROS package ceti\_sar. The data format is in the corresponding csv files (ori_data).
 
-<!--
-## Instructions on executing the sensing code.
-1. These matlab files are for regenerating the AOA profiles using the data collected for hardware experiments. 
-Install the BLAS and LAPACK libraries.
-E.g. on ubuntu 
-sudo apt-get install libblas-dev liblapack-dev
-Open matlab and run following commands:
-    - Configure the mtimex.c file 
-mex -L/usr/lib -lblas -llapack mtimesx.c
-    - execute code (to process all data), check the config_values_for_different_datasets for the parameter values.
-bulk_process_aoa_drone_sdr_local_position('Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/iq_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/ori_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/gps_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/gps_data_tx')
-    - For realtime time implementation using ROS, use the get_aoa_drone_sdr_local_position_ros.m instead
-    - The RPI_SDR_data_collection_code has the python scripts to get data from the SDR. It requires configuing the SoapySDR : https://github.com/pothosware/SoapySDR dependencies.
-The position and GPS data (for groundtruth) needs to be collected usign the mavros API. The data format is in the correspoding csv files (ori_data).
--->
 
 # References
 [1] Gero, S., Milligan, M., Scotia, N., Rinaldi, C., Francis, P., Gordon, J., Carlson, C. A., Steffen, A.,
