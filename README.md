@@ -4,7 +4,7 @@
 [Access this dataset on github](https://github.com/Project-CETI/avatars-code/)
 
 This dataset contains files to regenerate results from the paper ``Reinforcement Learning-Based Framework for Whale Rendezvous via Autonomous Sensing Robots''.
-The dataset and code repo includes data files used to parse acoustic and VHF data and to run the multiagent rollout code to route robots to rendezvous with whales in postprocessing. The repository also includes code and data for computing AOA for VHF signals using the drone's trajectory effectively emulating a synthetic aperture radar. The sensing code files enable the computation of the VHF AOA in real-time.
+The dataset and code repo include data files used to parse acoustic and VHF data and to run the multiagent rollout code to route robots to rendezvous with whales in postprocessing. The repository also includes code and data for computing AOA for VHF signals using the drone's trajectory effectively emulating a synthetic aperture radar. The sensing code files enable the computation of the VHF AOA in real-time.
 
 
 ## Description of the data and file structure
@@ -49,19 +49,19 @@ dswp_parsed_data_moving_sensors
 <li>
 
 `yyyy-mm-dd_####aoa.csv`: each line has the time in seconds, sensor longitude, sensor latitude, angle of arrival obtained from the sensor, angle of arrival candidate 1 due to left-right ambiguity, angle of arrival candidate 2 due to left-right ambiguity, standard deviation (in degree) of zero mean gaussian error of the sensor, sensor type ('A' for acoustic and 'V' for VHF).
-The fourth column (angle of arrival obtained from the sensor) may be left blank if both candidates for aoa is present.
+The fourth column (angle of arrival obtained from the sensor) may be left blank if both candidates for AOA are present.
 </li>
 
 <li>
 
-`yyyy-mm-dd_####ground_truth.csv`: each line has the time in seconds, fluke longitude, fluke latitude, camera lonitude, camera latitude, fluke angle in degree.
+`yyyy-mm-dd_####ground_truth.csv`: each line has the time in seconds, fluke longitude, fluke latitude, camera longitude, camera latitude, fluke angle in degree.
 Since the camera location and fluke angle are not used in the ablation study, the last 3 columns are blank.
 </li>
 
 <li>
 
 `yyyy-mm-dd_####surface_interval.csv`: each line has the surface interval start time in minutes, surface interval end time in minutes, and the fluke angle in degrees.
-If the fluke angle is not obtained it is set to None.
+If the fluke angle is not obtained, it is set to None.
 </li>
 
 <li>
@@ -70,18 +70,18 @@ If the fluke angle is not obtained it is set to None.
 </li>
 <li>
 
-`whale_track_yyyy-mm-dd_####.png`: visulization of the whale trace in GPS coordinates. The surface phase is indcated in red, and the underwater phase is indicated in black. The surface interval start and end times are indicated in HH:MM format in the figure. The times in the figure are calculated from start of the trace.
+`whale_track_yyyy-mm-dd_####.png`: visualization of the whale trace in GPS coordinates. The surface phase is indicated in red, and the underwater phase is indicated in black. The surface interval start and end times are indicated in HH:MM format in the figure. The times in the figure are calculated from the start of the trace.
 </li>
 </ul>
 
 <li>
 
-`avatars-code/Autonomy_module/Engg_whale_postprocessed_trace` contains the following files per day and per whale id. This folder presents data for the engineered whale experiments presented in our paper (see Results). This folder has a simular structure to `avatars-code/Autonomy_module/dswp_parsed_data_moving_sensors`.
+`avatars-code/Autonomy_module/Engg_whale_postprocessed_trace` contains the following files per day and per whale id. This folder presents data for the engineered whale experiments presented in our paper (see Results). This folder has a similar structure to `avatars-code/Autonomy_module/dswp_parsed_data_moving_sensors`.
 </li>
 
 <li>
 
-`avatars-code/Autonomy_module/Feb24_Dominica_Data` contains the following files per day and per whale id. This folder presents data for the sperm whale experiments presented in our paper (see Results). This folder has a simular structure to `avatars-code/Autonomy_module/dswp_parsed_data_moving_sensors`.
+`avatars-code/Autonomy_module/Feb24_Dominica_Data` contains the following files per day and per whale id. This folder presents data for the sperm whale experiments presented in our paper (see Results). This folder has a similar structure to `avatars-code/Autonomy_module/dswp_parsed_data_moving_sensors`.
 </li>
 
 <li>
@@ -117,7 +117,7 @@ avatars-code/Autonomy_module/src
 ```
 <ul><li>
 
-`requirements.txt` contains the python package dependecies
+`requirements.txt` contains the python package dependencies
 </li><li>
 
 `configs/config_Dominica_Nov23.json` is the default configuration for running an experiment with the engineered whale
@@ -132,7 +132,7 @@ avatars-code/Autonomy_module/src
 `configs/constants.py` contains helper functions and global constants
 </li><li>
 
-`global_knowledge.py` contains the class for running various configurations, including the number of robots, the number of whales, experiment type, sensor types and errors. This file reads values from `configs/config_*.json` files.
+`global_knowledge.py` contains the class for running various configurations, including the number of robots, the number of whales, experiment type, sensor types, and errors. This file reads values from `configs/config_*.json` files.
 </li><li>
 
 `system_state.py` reads the senosr data from `avatars-code/Autonomy_module/dswp_parsed_data_moving_sensors, avatars-code/Autonomy_module/Engg_whale_postprocessed_trace`, `avatars-code/Autonomy_module/Feb24_Dominica_Data`
@@ -182,7 +182,94 @@ avatars-code/Autonomy_module/src
 </ul>
 
 ### Description of the data and file structure for VHF sensing code
-The dataset and code repo include data files used to compute AOA for VHF signals using the drone's trajectory effectively emulating a synthetic aperture radar. The code files enable computation of the VHF AOA in real-time.
+
+```
+|- Datasets # contains raw data files
+|- ceti-sar # ROS package to collect trajectory data
+|- config_values_for_different_datasets # terminal output for the datafiles
+|- scripts # collecting and saving VHF data from SDR using the SoapySDR framework
+
+```
+
+The `Datasets/Info_dataset_*.txt` contains the output from the Matlab terminal when processing each of the dataset files. The description of the dataset files is as follows.
+
+`Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica` contains data files for realtime VHF acquisition using drone flights in Dominica, collected on 21st November 2023.
+
+`Datasets/Dataset_Sci-robotics-Dominica_set_2-11-22-2023-Dominica` contains data files for realtime VHF acquisition using drone flights in Dominica, collected on 22st November 2023.
+
+The structure of the these two datasets is as follows:
+```
+| - Dataset_Sci-robotics-Dominica_set_<day-mm-dd-yyyy>-Dominica # here <day> is the experiment day 
+| | - Flight_<n> # <n> is the nth drone flight on that day
+| | | - gps_data
+| | | - gps_data_tx
+| | | - iq_realtime_subsampled_data
+| | | - ori_data
+| | | - info.txt
+```
+
+Each folder corresponds to data collected during a drone flight. 
+
+`Datasets/Dataset_Sci-robotics_experiments_horn_pond-Oct31-2023`: Contains the data files for experiments at Horn Pond in Boston. The format of this folder is as follows - 
+
+```
+| - Dataset_Sci-robotics_experiments_horn_pond-Oct31-2023
+| | - Experiment_1_vertical_custom_tag
+| | | - gps_data
+| | | - gps_data_tx
+| | | - iq_realtime_subsampled_data
+| | | - ori_data
+| | | - info.txt
+| | - Experiment_1_vertical_fish_tag
+| | - Experiment_2-vertical_custom_tag
+| | - Experiment_2_vertical_fish_tag
+| | - Experiment_3-vertical_custom_tag
+```
+
+The `Datasets/Dataset_Sci-robotics_experiments_horn_pond-Oct31-2023/*_custom_tag` folders correspond to data collected for a custom VHF tag, and the `*_fish_tag` corresponds to data collected for the off-the-shelf VHF fish tag.
+
+`Datasets/Dataset_Sci-robotics_experiments_with_stationary_tag_Oct20-2023` contains data for experiments with a stationary tag collected in Harvard's Ohiri field. The format of this folder is as follows:
+
+```
+| - Dataset_Sci-robotics_experiments_with_stationary_tag_Oct20-2023
+| | - Location_1
+| | | - Experiment_1
+| | | | - gps_data
+| | | | - gps_data_tx
+| | | | - iq_realtime_subsampled_data
+| | | | - ori_data
+| | | - Experiment_2
+| | | - Experiment_3
+| | - Location_1_inplace_rotation
+| | | - Experiment_1
+| | | - Experiment_2
+| | | - Experiment_3
+| | - Location_2
+| | | - Experiment_1
+| | | - Experiment_2
+| | | - Experiment_3
+| | | - Experiment_4
+| | - Location_3
+| | | - Experiment_1
+| | | - Experiment_2
+| | | - Experiment_3
+| | | - Experiment_4
+```
+
+Each experiment here corresponds to data collected during a drone flight.
+
+
+
+`gps_data` contains the GPS position data of the UAV when collecting VHF data. Column 1 : timestamp, Column 4: GPS latitude, Column 5: GPS longitude.
+
+`gps_data_tx` contains the GPS position data of the signal transmitter used for calculating the true AOA. Columns are timestamp, position.latitude_deg, position.longitude_deg, position.absolute_altitude_m, position.relative_altitude_m. 
+
+`iq_realtime_subsampled_data` contains the IQ data corresponding to the VHF signals collected at the two RX receivers of the software-defined radio. These are .mat files containing timestamp, complex data for RX 1 and complex data for RX 2.
+
+`ori_data` contains the position and orientation data of the drone when in flight in cartesian coordinates. The columns are timestamp seconds, timestamp-nano seconds, yaw, x, y, z. This data is collected using the ROS package ceti_sar.
+
+
+<!--The dataset and code repo include data files used to compute AOA for VHF signals using the drone's trajectory effectively emulating a synthetic aperture radar. The code files enable computation of the VHF AOA in real-time.
 
 ```
 |- ceti-sar # ROS package to collect trajectory data
@@ -211,6 +298,7 @@ Each data folder used to compute an individual AOA measurement contains the foll
 |- ori_data
   |- displacement.csv
 ```
+-->
 
 Instructions on executing the code are given below.
 
@@ -267,7 +355,33 @@ Instructions on executing the code are given below.
 ### Instructions on executing the Sensing code
 
 Instructions on executing the code.
-1. These matlab files are for regenerating the AOA profiles using the data collected for hardware experiments. 
+
+
+These matlab files are for regenerating the AOA profiles using the data collected for hardware experiments.
+
+1. Install the BLAS and LAPACK libraries. E.g. on ubuntu
+2. sudo apt-get install libblas-dev liblapack-dev
+3. Open matlab and install the signal processing toolkit, then run the following commands:
+
+```
+Configure the mtimex.c file mex -L/usr/lib -lblas -llapack mtimesx.c
+```
+
+4. AOA to files in a dataset can be obtained by running the bulk_process_aoa_drone_sdr_local_position. For example:
+
+```
+bulk_process_aoa_drone_sdr_local_position('Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/iq_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/ori_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/gps_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/gps_data_tx')
+```
+
+5.For real-time implementation using ROS, use the get_aoa_drone_sdr_local_position_ros.m instead
+
+6. The RPI_SDR_data_collection_code has the python scripts to get data from the SDR. It requires configuring the SoapySDR : https://github.com/pothosware/SoapySDR dependencies.
+
+7. The position and GPS data (for groundtruth) need to be collected using the mavros API and ROS package ceti_sar. The data format is in the corresponding CSV files (ori_data).
+
+
+
+<!--1. These matlab files are for regenerating the AOA profiles using the data collected for hardware experiments. 
 
 Install the BLAS and LAPACK libraries.
 E.g. on ubuntu 
@@ -288,7 +402,7 @@ c. For real-time time implementation using ROS, use the get_aoa_drone_sdr_local_
 d. The RPI_SDR_data_collection_code has the python scripts to get data from the SDR. It requires configuring the SoapySDR : https://github.com/pothosware/SoapySDR dependencies.
 
 The position and GPS data (for groundtruth) needs to be collected usign the mavros API and ROS package ceti\_sar. The data format is in the corresponding csv files (ori_data).
-
+-->
 
 # References
 [1] Gero, S., Milligan, M., Scotia, N., Rinaldi, C., Francis, P., Gordon, J., Carlson, C. A., Steffen, A.,
