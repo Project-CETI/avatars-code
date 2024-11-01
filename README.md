@@ -373,7 +373,7 @@ Configure the mtimex.c file mex -L/usr/lib -lblas -llapack mtimesx.c
 bulk_process_aoa_drone_sdr_local_position('Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/iq_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/ori_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/gps_data', 'Datasets/Dataset_Sci-robotics-Dominica_set_1-11-21-2023-Dominica/Location_A/Experiment_1/gps_data_tx')
 ```
 
-5.For real-time implementation using ROS, use the get_aoa_drone_sdr_local_position_ros.m instead
+5. For real-time implementation using ROS, use the get_aoa_drone_sdr_local_position_ros.m instead
 
 6. The RPI_SDR_data_collection_code has the python scripts to get data from the SDR. It requires configuring the SoapySDR : https://github.com/pothosware/SoapySDR dependencies.
 
